@@ -8,10 +8,10 @@ SmartCart is a .NET MAUI mobile application designed to help users track grocery
 
 To keep the project organized:
 
-• Do not push directly to the `main` branch  
+• Do not push directly to the `master` branch  
 • Each team member works in their assigned branch  
 • Pull requests should merge into `dev` first  
-• After testing, `dev` will be merged into `main`
+• After testing, `dev` will be merged into `master`
 
 Branch assignments:
 
