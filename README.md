@@ -4,6 +4,23 @@ SmartCart is a .NET MAUI mobile application designed to help users track grocery
 
 ---
 
+## ‼️Development Workflow
+
+To keep the project organized:
+
+• Do not push directly to the `main` branch  
+• Each team member works in their assigned branch  
+• Pull requests should merge into `dev` first  
+• After testing, `dev` will be merged into `main`
+
+Branch assignments:
+
+- ui-melissa
+- backend-christopher
+- logic-xander
+- integration-isabella
+---
+
 ## ✨ Features
 
 - Create and manage grocery lists
