@@ -1,14 +1,21 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <Shell
     x:Class="SmartCart.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SmartCart"
-    Title="SmartCart">
+    xmlns:views="clr-namespace:SmartCart.Views">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <ShellContent
+            Title="Home"
+            ContentTemplate="{DataTemplate views:HomePage}" />
 
+        <ShellContent
+            Title="Lists"
+            ContentTemplate="{DataTemplate views:GroceryListPage}" />
+
+        <ShellContent
+            Title="Budget"
+            ContentTemplate="{DataTemplate views:BudgetPage}" />
+
+    </TabBar>
 </Shell>
