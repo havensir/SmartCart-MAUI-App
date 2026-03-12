@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SmartCart.Models
 {
-    internal class Budget
+    public class Budget
     {
+        public decimal Limit { get; set; }
+        public decimal Remaining { get; set; }
+        public bool IsOverBudget { get; set; }
+        public bool IsNearBudget { get; set; }
     }
 }

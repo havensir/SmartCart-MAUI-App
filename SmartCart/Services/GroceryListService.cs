@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartCart.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,16 @@ using System.Threading.Tasks;
 
 namespace SmartCart.Services
 {
-    internal class GroceryListService
+    public class GroceryListService
     {
+        public decimal CalculateTotal(List<GroceryItem> items)
+        {
+            return items.Sum(item => item.Price * item.Quantity);
+        }
+
+        public int CalculateItemCount(List<GroceryItem> items)
+        {
+            return items.Sum(item => item.Quantity);
+        }
     }
 }
