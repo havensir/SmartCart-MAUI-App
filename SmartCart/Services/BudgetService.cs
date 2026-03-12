@@ -8,7 +8,21 @@ using System.Threading.Tasks;
 
 namespace SmartCart.Services
 {
-    internal class BudgetService
+    public class BudgetService
     {
+        public decimal CalculateRemaining(decimal budgetLimit, decimal currentTotal)
+        {
+            return budgetLimit - currentTotal;
+        }
+
+        public bool IsOverBudget(decimal budgetLimit, decimal currentTotal)
+        {
+            return currentTotal > budgetLimit;
+        }
+
+        public bool IsNearBudget(decimal budgetLimit, decimal currentTotal)
+        {
+            return budgetLimit > 0 && currentTotal >= budgetLimit * 0.9m;
+        }
     }
 }

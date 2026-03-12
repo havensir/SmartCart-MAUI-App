@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartCart.Models
 {
-    internal class GroceryList
+    public class GroceryList
     {
+        public string Name { get; set; } = "My Grocery List";
+        public List<GroceryItem> Items { get; set; } = new();
     }
 }
