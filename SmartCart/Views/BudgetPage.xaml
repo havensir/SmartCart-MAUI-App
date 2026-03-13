@@ -3,10 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.BudgetPage"
              Title="BudgetPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <ScrollView>
+    <VerticalStackLayout Padding="20" Spacing="16">
+
+        <Label Text="Create Budget"
+              Style="{StaticResource PageTitle}"/>
+
+        <Border Style="{StaticResource CardStyle}">
+
+            <VerticalStackLayout>
+
+                <Label Text="Monthly Budget"
+                    FontAttributes="Bold"/>
+
+                <Label Text="Current Budget"
+                           Style="{StaticResource SectionTitle}"/>
+
+                <Label Text="$210 spent of 300"/>
+
+                <ProgressBar Progress="0.70"/>
+
+                <Label Text="$90 Remaining"
+                           TextColor="{StaticResource SuccessColor}"/>
+
+            </VerticalStackLayout>
+
+        </Border>
+
+        <Entry Placeholder="Budget Name"/>
+
+        <Entry Placeholder="Budget Amount"
+                   Keyboard="Numeric"/>
+
+        <Label Text="Budget Period"/>
+
+        <VerticalStackLayout>
+            <RadioButton Content="Weekly" GroupName="BudgetPeriod"/>
+            <RadioButton Content="Bi-Weekly" GroupName="BudgetPeriod"/>
+            <RadioButton Content="Monthly" GroupName="BudgetPeriod"/>
+        </VerticalStackLayout>
+
+            <Editor Placeholder="Notes"
+                HeightRequest="100"/>
+
+            <Button Text="Save"
+                    Style="{StaticResource SecondaryButton}"/>
+
     </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
