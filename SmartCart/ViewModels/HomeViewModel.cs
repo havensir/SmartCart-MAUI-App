@@ -8,5 +8,6 @@ namespace SmartCart.ViewModels
 {
     internal class HomeViewModel
     {
+
     }
 }
