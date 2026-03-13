@@ -8,5 +8,7 @@ namespace SmartCart.Models
 {
     internal class GroceryList
     {
+    public int ListId { get; set; }
+    public string ListName { get; set; }
     }
 }
