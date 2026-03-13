@@ -3,10 +3,123 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.HomePage"
              Title="HomePage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="0,10">
+
+                <!-- Title -->
+                <Label Text="Welcome To SmartCart!"
+           Grid.Column="0"
+           FontSize="24"
+           FontAttributes="Bold"
+           VerticalOptions="Center"
+           HorizontalOptions="Start"/>
+
+                <!-- Sign In -->
+                <VerticalStackLayout Grid.Column="1"
+                         HorizontalOptions="Center"
+                         Spacing="2">
+                    <Image Source="profile.png"
+               HeightRequest="26"
+               WidthRequest="26"/>
+                    <Label Text="Sign In"
+               FontSize="10"
+               HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+                <!-- My Cart -->
+                <VerticalStackLayout Grid.Column="2"
+                         HorizontalOptions="Center"
+                         Spacing="2">
+                    <Image Source="cart.png"
+               HeightRequest="26"
+               WidthRequest="26"/>
+                    <Label Text="My Cart"
+               FontSize="10"
+               HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+                <!-- Share -->
+                <VerticalStackLayout Grid.Column="3"
+                         HorizontalOptions="Center"
+                         Spacing="2">
+                    <Image Source="share.png"
+               HeightRequest="26"
+               WidthRequest="26"/>
+                    <Label Text="Share"
+               FontSize="10"
+               HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Budget Overview"
+                         Style="{StaticResource SectionTitle}"/>
+                    <Label Text="$210 spent of $300 budget"/>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Well-Known Stores"
+                 Style="{StaticResource SectionTitle}"/>
+
+            <ScrollView Orientation="Horizontal">
+                <HorizontalStackLayout Spacing="18">
+                    <VerticalStackLayout>
+                        <Border WidthRequest="100"
+                              HeightRequest="100"
+                              StrokeShape="RoundRectangle 35"
+                              Style="{StaticResource CardStyle}">
+                            <Image Source="kroger.png"/>
+                        </Border>
+                        <Label Text="Kroger"
+                             FontSize="12"
+                             HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Border WidthRequest="100"
+                              HeightRequest="100"
+                              StrokeShape="RoundRectangle 35"
+                              Style="{StaticResource CardStyle}">
+                            <Image Source="walmart.png"/>
+                        </Border>
+                        <Label Text="Walmart"
+                             FontSize="12"
+                             HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Border WidthRequest="100"
+                              HeightRequest="100"
+                              StrokeShape="RoundRectangle 35"
+                              Style="{StaticResource CardStyle}">
+                            <Image Source="target.png"/>
+                        </Border>
+                        <Label Text="Target"
+                             FontSize="12"
+                             HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Border WidthRequest="100"
+                              HeightRequest="100"
+                              StrokeShape="RoundRectangle 35"
+                              Style="{StaticResource CardStyle}">
+                            <Image Source="aldi.png"/>
+                        </Border>
+                        <Label Text="Aldi"
+                             FontSize="12"
+                             HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+
+                </HorizontalStackLayout>
+            </ScrollView>
+            
+            <Button Text="View Grocery Lists"
+                  Style="{StaticResource PrimaryButton}"/>
+        </VerticalStackLayout>
+    </ScrollView>
+    
 </ContentPage>
