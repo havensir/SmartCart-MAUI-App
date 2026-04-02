@@ -6,4 +6,20 @@ public partial class AddItemPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+	private async void OnAddItemClicked(object sender, EventArgs e)
+	{
+		if (string.IsNullOrWhiteSpace(NameEntry.Text) ||
+			string.IsNullOrWhiteSpace(DescriptionEntry.Text))
+		{
+			await DisplayAlert("Error", "Please enter item name and price.", "Okay");
+			return;
+		}
+	}
+
+	private async void OnDeleteItemClicked(object sender, EventArgs e)
+	{
+
+
+	}
 }
