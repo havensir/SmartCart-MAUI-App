@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace SmartCart.Models
 {
-    internal class GroceryList
+    public class GroceryList
     {
+// <<<<<<< backend-christopher
+    public int ListId { get; set; }
+    public string ListName { get; set; }
+// =======
+        public string Name { get; set; } = "My Grocery List";
+        public List<GroceryItem> Items { get; set; } = new();
+// >>>>>>> dev
     }
 }
