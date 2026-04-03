@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartCart.ViewModels
 {
-    internal class HomeViewModel
+    public class HomeViewModel
     {
+        public string WelcomeText { get; set; } = "Welcome to SmartCart";
 
     }
 }

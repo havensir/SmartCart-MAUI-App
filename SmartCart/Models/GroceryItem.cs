@@ -13,7 +13,7 @@ namespace SmartCart.Models
         public int ItemId { get; set; }
 
         // Only one Name property
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         // Only one Quantity property
         public int Quantity { get; set; }
