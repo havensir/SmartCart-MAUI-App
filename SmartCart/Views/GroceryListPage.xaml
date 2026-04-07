@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.GroceryListPage"
              Title="GroceryListPage">
+    
     <VerticalStackLayout Padding="16" Spacing="20">
 
         <Label Text="My Grocery List"
@@ -17,8 +18,10 @@
                    WidthRequest="22"/>
 
                 <Entry Grid.Column="1"
-                   Placeholder="Search for groceries"
-                   BackgroundColor="Transparent"/>
+                       x:Name="SearchEntry"
+                       Placeholder="Search for groceries"
+                       BackgroundColor="Transparent"
+                       TextChanged="OnSearchTextChanged"/>
             </Grid>
         </Border>
 
