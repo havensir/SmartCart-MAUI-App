@@ -10,21 +10,37 @@
             <Label Text="Add Grocery Item"
              Style="{StaticResource PageTitle}"/>
 
-            <Entry Placeholder="Item Name"/>
+            <Entry x:Name="NameEntry"
+                   Placeholder="Item Name"/>
+            
+            <Entry x:Name="DescriptionEntry"
+                   Placeholder="Description"/>
 
-            <Entry Placeholder="Description"/>
+            <Entry x:Name="PriceEntry"
+                   Placeholder="Price"
+                   Keyboard="Numeric"/>
 
-            <Entry Placeholder="Price"
-               Keyboard="Numeric"/>
-
-            <Picker Title="Category"/>
+            <Picker x:Name="CategoryPicker"
+                    Title="Category">
+                <Picker.Items>
+                    <x:String>Dairy</x:String>
+                    <x:String>Produce</x:String>
+                    <x:String>Backery</x:String>
+                    <x:String>Meat</x:String>
+                    <x:String>Frozen</x:String>
+                </Picker.Items>
+            </Picker>
+                    
+            
 
             <Button Text="+ Add Item To Cart"
-                Style="{StaticResource PrimaryButton}"/>
+                    Style="{StaticResource PrimaryButton}"
+                    Clicked="OnAddItemClicked"/>
 
             <Button Text="X Delete Item From Cart"
-                BackgroundColor="{StaticResource DangerColor}"
-                TextColor="#FEFEFA"/>
+                    BackgroundColor="{StaticResource DangerColor}"
+                    TextColor="#FEFEFA"
+                    Clicked="OnDeleteItemClicked"/>
 
         </VerticalStackLayout>
     </ScrollView>
