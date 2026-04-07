@@ -32,12 +32,12 @@
                    FontAttributes="Bold"/>
 
                 <Label Grid.Column="1"
-                   Text="$0.00"
+                   Text="{Binding Total, StringFormat='${0:F2}'}"
                    FontAttributes="Bold"/>
             </Grid>
         </Border>
 
-        <CollectionView x:Name="GroceryCollection">
+        <CollectionView ItemsSource="{Binding Items}">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -70,7 +70,7 @@
                                 <Button Text="-"
                             WidthRequest="40"
                             HeightRequest="40"
-                            BackgroundColor="{StaticResource AccentColor}"
+                            BackgroundColor="{StaticResource PrimaryColor}"
                             Clicked="OnLowerQuantityNumber"/>
 
                                 <Label Text="{Binding Quantity}"

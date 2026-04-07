@@ -8,12 +8,12 @@
             <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="0,10">
 
                 <!-- Title -->
-                <Label Text="Welcome To SmartCart!"
-           Grid.Column="0"
-           FontSize="24"
-           FontAttributes="Bold"
-           VerticalOptions="Center"
-           HorizontalOptions="Start"/>
+                <Label Text="{Binding WelcomeText}" 
+                   Grid.Column="0"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Start"/>
 
                 <!-- Sign In -->
                 <VerticalStackLayout Grid.Column="1"
@@ -74,7 +74,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Label Text="Well-Known Stores"
+            <Label Text="Well-Known Local Stores"
                  Style="{StaticResource SectionTitle}"/>
 
             <ScrollView Orientation="Horizontal">
@@ -130,6 +130,7 @@
                              FontSize="12"
                              HorizontalOptions="Center"/>
                     </VerticalStackLayout>
+
                     <VerticalStackLayout>
                         <Border WidthRequest="100"
                               HeightRequest="100"

@@ -1,10 +1,13 @@
+using SmartCart.ViewModels;
+
 namespace SmartCart.Views;
 
 public partial class HomePage : ContentPage
 {
 	public HomePage()
 	{
-		InitializeComponent();
+        InitializeComponent();
+        BindingContext = new HomeViewModel();
 	}
 
 	private async void OnSignInTapped(object sender, EventArgs e)
