@@ -22,6 +22,8 @@
                        Placeholder="Search for groceries"
                        BackgroundColor="Transparent"
                        TextChanged="OnSearchTextChanged"/>
+
+              
             </Grid>
         </Border>
 

@@ -25,7 +25,7 @@
                 <Picker.Items>
                     <x:String>Dairy</x:String>
                     <x:String>Produce</x:String>
-                    <x:String>Backery</x:String>
+                    <x:String>Bakery</x:String>
                     <x:String>Meat</x:String>
                     <x:String>Frozen</x:String>
                 </Picker.Items>
