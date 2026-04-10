@@ -132,6 +132,11 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout>
+                        
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Aldi"/>
+                        </VerticalStackLayout.GestureRecognizers>
+                        
                         <Border WidthRequest="100"
                               HeightRequest="100"
                               StrokeShape="RoundRectangle 35"

@@ -40,4 +40,10 @@ public partial class GroceryListPage : ContentPage
         BindingContext = null;
         BindingContext = vm;
     }
+  
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+    
+
+    }
 }
