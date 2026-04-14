@@ -1,15 +1,16 @@
 using SmartCart.Models;
 using SmartCart.ViewModels;
-namespace SmartCart.Views;
 
+namespace SmartCart.Views;
 public partial class GroceryListPage : ContentPage
 {
-    public GroceryListPage()
+    private readonly GroceryListViewModel _viewModel;
+    public GroceryListPage(GroceryListViewModel viewModel)
     {
         InitializeComponent();
 
         // TODO (Isabella - Integration): Ensure ViewModel is shared across pages (not recreated each time)
-        BindingContext = new GroceryListViewModel();
+        BindingContext = _viewModel = viewModel;
     }
 
     private void OnRaiseQuantityNumber(object sender, EventArgs e)
