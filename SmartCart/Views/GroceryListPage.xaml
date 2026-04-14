@@ -3,104 +3,130 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.GroceryListPage"
              Title="GroceryListPage">
-    
-    <VerticalStackLayout Padding="16" Spacing="20">
 
+    <VerticalStackLayout Padding="20" Spacing="24">
+
+        <!-- Page Title -->
         <Label Text="My Grocery List"
-           Style="{StaticResource PageTitle}" />
+           Style="{StaticResource PageTitle}"
+           Margin="0,0,0,4"/>
 
-        <Border Style="{StaticResource CardStyle}">
+        <!-- Search Bar -->
+        <Border Style="{StaticResource CardStyle}"
+            Padding="12"
+            Margin="0,0,0,4">
             <Grid ColumnDefinitions="Auto,*"
-              ColumnSpacing="10">
+              ColumnSpacing="12"
+              VerticalOptions="Center">
 
                 <Image Source="search.png"
                    HeightRequest="22"
-                   WidthRequest="22"/>
+                   WidthRequest="22"
+                   VerticalOptions="Center"/>
 
                 <Entry Grid.Column="1"
-                       x:Name="SearchEntry"
-                       Placeholder="Search for groceries"
-                       BackgroundColor="Transparent"
-                       TextChanged="OnSearchTextChanged"/>
-
-              
+                   x:Name="SearchEntry"
+                   Placeholder="Search for groceries"
+                   BackgroundColor="Transparent"
+                   FontSize="15"
+                   VerticalOptions="Center"
+                   TextChanged="OnSearchTextChanged"/>
             </Grid>
         </Border>
 
-        <Border Style="{StaticResource CardStyle}">
-            <Grid ColumnDefinitions="*,Auto">
+        <!-- Current Total -->
+        <Border Style="{StaticResource CardStyle}"
+            Padding="14"
+            Margin="0,0,0,4">
+            <Grid ColumnDefinitions="*,Auto"
+              VerticalOptions="Center">
 
                 <Label Text="Your Current Total Is:"
-                   FontAttributes="Bold"/>
+                   FontAttributes="Bold"
+                   FontSize="15"
+                   VerticalOptions="Center"/>
 
                 <Label Grid.Column="1"
-                   Text="{Binding Total, StringFormat='${0:F2}'}"
-                   FontAttributes="Bold"/>
+                   Text="{Binding Total, StringFormat='{}{0:C}'}"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   VerticalOptions="Center"/>
             </Grid>
         </Border>
 
-        <CollectionView ItemsSource="{Binding Items}">
+        <!-- Grocery Items -->
+        <CollectionView ItemsSource="{Binding Items}"
+                    SelectionMode="None">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-
-                    <Border Style="{StaticResource CardStyle}">
+                    <Border Style="{StaticResource CardStyle}"
+                        Padding="14"
+                        Margin="0,0,0,10">
 
                         <Grid RowDefinitions="Auto,Auto"
-                  ColumnDefinitions="*,Auto">
+                          ColumnDefinitions="*,Auto"
+                          RowSpacing="6">
 
+                            <!-- Item Name -->
                             <Label Text="{Binding Name}"
-                       FontAttributes="Bold"
-                       FontSize="18"/>
+                               FontAttributes="Bold"
+                               FontSize="17"
+                               VerticalOptions="Center"/>
 
+                            <!-- Edit Button -->
                             <Button Text="Edit"
-                        Grid.Column="1"
-                        HeightRequest="36"
-                        WidthRequest="65"
-                        Style="{StaticResource SecondaryButton}"/>
+                                Grid.Column="1"
+                                FontSize="12"
+                                HeightRequest="32"
+                                WidthRequest="70"
+                                Style="{StaticResource SecondaryButton}"
+                                VerticalOptions="Center"/>
 
+                            <!-- Price -->
                             <Label Grid.Row="1"
-                       Text="{Binding Price, StringFormat='${0:F2}'}"
-                       FontSize="16"
-                       VerticalOptions="Center"/>
+                               Text="{Binding Price, StringFormat='{}{0:C}'}"
+                               FontSize="15"
+                               VerticalOptions="Center"/>
 
+                            <!-- Quantity Controls -->
                             <HorizontalStackLayout Grid.Row="1"
-                                       Grid.Column="1"
-                                       Spacing="10"
-                                       VerticalOptions="Center">
+                                               Grid.Column="1"
+                                               Spacing="8"
+                                               VerticalOptions="Center">
 
                                 <Button Text="-"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            BackgroundColor="{StaticResource PrimaryColor}"
-                            Clicked="OnLowerQuantityNumber"/>
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    BackgroundColor="{StaticResource PrimaryColor}"
+                                    TextColor="White"
+                                    Clicked="OnLowerQuantityNumber"/>
 
                                 <Label Text="{Binding Quantity}"
-                           FontSize="18"
-                           VerticalOptions="Center"/>
+                                   FontSize="17"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"
+                                   WidthRequest="30"
+                                   HorizontalTextAlignment="Center"/>
 
                                 <Button Text="+"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            BackgroundColor="{StaticResource PrimaryColor}"
-                            Clicked="OnRaiseQuantityNumber"/>
-
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    BackgroundColor="{StaticResource PrimaryColor}"
+                                    TextColor="White"
+                                    Clicked="OnRaiseQuantityNumber"/>
                             </HorizontalStackLayout>
 
                         </Grid>
-
                     </Border>
-
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
-
         <Button Text="+ Add Item"
-            Style="{StaticResource PrimaryButton}" />
-
-
+                Style="{StaticResource PrimaryButton}" />
+        <!-- TODO - Add logic to add new item to cart /> -->
 
     </VerticalStackLayout>
 </ContentPage>
