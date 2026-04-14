@@ -11,7 +11,7 @@ using SmartCart.Models;
 
 namespace SmartCart.ViewModels
 {
-    internal class HomeViewModel
+    public class HomeViewModel
     {
         private readonly DatabaseService _databaseService;
 

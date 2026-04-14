@@ -4,51 +4,53 @@
              x:Class="SmartCart.Views.BudgetPage"
              Title="BudgetPage">
     <ScrollView>
-    <VerticalStackLayout Padding="20" Spacing="16">
+        <VerticalStackLayout Padding="20" Spacing="16">
 
-        <Label Text="Create Budget"
-              Style="{StaticResource PageTitle}"/>
+            <Label Text="Create Budget"
+                   Style="{StaticResource PageTitle}"/>
 
-        <Border Style="{StaticResource CardStyle}">
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout>
+                    <Label Text="Monthly Budget"
+                           FontAttributes="Bold"/>
 
-            <VerticalStackLayout>
-
-                <Label Text="Monthly Budget"
-                    FontAttributes="Bold"/>
-
-                <Label Text="Current Budget"
+                    <Label Text="Current Budget"
                            Style="{StaticResource SectionTitle}"/>
 
-                <Label Text="$210 spent of 300"/>
+                    <!-- Bind to ViewModel properties -->
+                    <Label Text="{Binding BudgetSummaryText, FallbackValue='$210 spent of 300'}"/>
 
-                <ProgressBar Progress="0.70"/>
+                    <ProgressBar Progress="{Binding BudgetProgress, FallbackValue=0.70}"/>
 
-                <Label Text="$90 Remaining"
+                    <Label Text="{Binding RemainingBudgetText, FallbackValue='$90 Remaining'}"
                            TextColor="{StaticResource SuccessColor}"/>
+                </VerticalStackLayout>
+            </Border>
 
-            </VerticalStackLayout>
+            <!-- Bind Input Controls -->
+            <Entry Placeholder="Budget Name" 
+                   Text="{Binding BudgetName}" />
 
-        </Border>
-
-        <Entry Placeholder="Budget Name"/>
-
-        <Entry Placeholder="Budget Amount"
+            <Entry Placeholder="Budget Amount"
+                   Text="{Binding BudgetAmount}"
                    Keyboard="Numeric"/>
 
-        <Label Text="Budget Period"/>
-
-        <VerticalStackLayout>
-            <RadioButton Content="Weekly" GroupName="BudgetPeriod"/>
-            <RadioButton Content="Bi-Weekly" GroupName="BudgetPeriod"/>
-            <RadioButton Content="Monthly" GroupName="BudgetPeriod"/>
-        </VerticalStackLayout>
+            <Label Text="Budget Period"/>
+            <VerticalStackLayout>
+                <!-- GroupName ensures they act as a single choice group -->
+                <RadioButton Content="Weekly" GroupName="BudgetPeriod" IsChecked="{Binding IsWeekly}"/>
+                <RadioButton Content="Bi-Weekly" GroupName="BudgetPeriod" IsChecked="{Binding IsBiWeekly}"/>
+                <RadioButton Content="Monthly" GroupName="BudgetPeriod" IsChecked="{Binding IsMonthly}"/>
+            </VerticalStackLayout>
 
             <Editor Placeholder="Notes"
-                HeightRequest="100"/>
+                    Text="{Binding BudgetNotes}"
+                    HeightRequest="100"/>
 
             <Button Text="Save"
+                    Command="{Binding SaveBudgetCommand}"
                     Style="{StaticResource SecondaryButton}"/>
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

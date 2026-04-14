@@ -17,5 +17,9 @@
             Title="Budget"
             ContentTemplate="{DataTemplate views:BudgetPage}" />
 
+        <ShellContent
+            Title="Add Item"
+            ContentTemplate="{DataTemplate views:AddItemPage}"/>
+
     </TabBar>
 </Shell>
