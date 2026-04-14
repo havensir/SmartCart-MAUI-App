@@ -13,7 +13,7 @@ namespace SmartCart.ViewModels
         private int _budgetId;
         private string _budgetName;
         private string _budgetNotes;
-        private string _budgetAmountText;
+        private string _budgetAmount;
 
         private bool _isWeekly;
         private bool _isBiWeekly;
@@ -37,10 +37,10 @@ namespace SmartCart.ViewModels
         }
 
         // Bound to Entry in the UI
-        public string BudgetAmountText
+        public string BudgetAmount
         {
-            get => _budgetAmountText;
-            set => SetProperty(ref _budgetAmountText, value);
+            get => _budgetAmount;
+            set => SetProperty(ref _budgetAmount, value);
         }
 
         public string BudgetNotes
@@ -140,7 +140,7 @@ namespace SmartCart.ViewModels
                 return;
             }
 
-            if (!decimal.TryParse(BudgetAmountText, out decimal amount) || amount <= 0)
+            if (!decimal.TryParse(BudgetAmount, out decimal amount) || amount <= 0)
             {
                 await Shell.Current.DisplayAlert("Error", "Enter a valid budget amount.", "OK");
                 return;

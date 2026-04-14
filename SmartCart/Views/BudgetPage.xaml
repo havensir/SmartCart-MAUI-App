@@ -18,11 +18,11 @@
                            Style="{StaticResource SectionTitle}"/>
 
                     <!-- Bind to ViewModel properties -->
-                    <Label Text="{Binding BudgetSummaryText, FallbackValue='$210 spent of 300'}"/>
+                    <Label Text="{Binding BudgetSummaryText}"/>
 
-                    <ProgressBar Progress="{Binding BudgetProgress, FallbackValue=0.70}"/>
+                    <ProgressBar Progress="{Binding BudgetProgress}"/>
 
-                    <Label Text="{Binding RemainingBudgetText, FallbackValue='$90 Remaining'}"
+                    <Label Text="{Binding RemainingBudgetText}"
                            TextColor="{StaticResource SuccessColor}"/>
                 </VerticalStackLayout>
             </Border>
@@ -32,8 +32,8 @@
                    Text="{Binding BudgetName}" />
 
             <Entry Placeholder="Budget Amount"
-                   Text="{Binding BudgetAmount}"
-                   Keyboard="Numeric"/>
+               Keyboard="Numeric"
+               Text="{Binding BudgetAmount}" /> 
 
             <Label Text="Budget Period"/>
             <VerticalStackLayout>
