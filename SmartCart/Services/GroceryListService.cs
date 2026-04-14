@@ -26,10 +26,5 @@ namespace SmartCart.Services
 
             return items.Sum(item => item.Quantity);
         }
-
-        public List<string> TEMPORARYGetSampleCategories()
-        {
-            return new List<string> { "Dairy", "Bread", "Fruit", "Vegetables", "Meat" };
-        }
     }
 }
