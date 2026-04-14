@@ -43,13 +43,13 @@
                 <RadioButton Content="Monthly" GroupName="BudgetPeriod" IsChecked="{Binding IsMonthly}"/>
             </VerticalStackLayout>
 
-            <Editor Placeholder="Notes"
+            <Editor Placeholder="Notes (Optional)"
                     Text="{Binding BudgetNotes}"
                     HeightRequest="100"/>
 
             <Button Text="Save"
                     Command="{Binding SaveBudgetCommand}"
-                    Style="{StaticResource SecondaryButton}"/>
+                    Style="{StaticResource PrimaryButton}"/>
 
         </VerticalStackLayout>
     </ScrollView>
