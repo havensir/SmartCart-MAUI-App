@@ -10,9 +10,7 @@ namespace SmartCart.ViewModels
     public class BudgetViewModel : INotifyPropertyChanged
     {
         // Fields
-        private int _budgetId;
         private string _budgetName;
-        private string _budgetNotes;
         private string _budgetAmount;
 
         private bool _isWeekly;
@@ -23,12 +21,6 @@ namespace SmartCart.ViewModels
         private string _budgetSummaryText;
         private string _remainingBudgetText;
 
-        // Properties
-        public int BudgetId
-        {
-            get => _budgetId;
-            set => SetProperty(ref _budgetId, value);
-        }
 
         public string BudgetName
         {
@@ -41,12 +33,6 @@ namespace SmartCart.ViewModels
         {
             get => _budgetAmount;
             set => SetProperty(ref _budgetAmount, value);
-        }
-
-        public string BudgetNotes
-        {
-            get => _budgetNotes;
-            set => SetProperty(ref _budgetNotes, value);
         }
 
         // Budget Period Selection (Mutually Exclusive)
