@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+
 namespace SmartCart.ViewModels
 {
     public class GroceryListViewModel : INotifyPropertyChanged
@@ -32,6 +33,10 @@ namespace SmartCart.ViewModels
 
         public GroceryListViewModel()
         {
+            // TODO (Christopher - Backend): Replace hardcoded data with SQLite-loaded data
+            
+            // TODO (Isabella - Integration): Ensure this loads when navigating to page
+
             // Can me modified or removed after more logic is added
             Items = new List<GroceryItem>
             {
@@ -42,10 +47,14 @@ namespace SmartCart.ViewModels
             };
 
             UpdateTotals(Items);
+            // TODO (Xander - Logic): Connect budget calculations here
         }
 
         public void UpdateTotals(List<GroceryItem> items)
         {
+            // TODO (Xander - Logic): Add item count tracking
+            // TODO (Xander - Logic): Trigger budget warnings (near/over)
+
             Total = _service.CalculateTotal(items);
         }
 
