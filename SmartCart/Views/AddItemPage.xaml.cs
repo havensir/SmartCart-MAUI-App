@@ -2,14 +2,11 @@ namespace SmartCart.Views;
 
 public partial class AddItemPage : ContentPage
 {
+   
     public AddItemPage()
-    {
-        InitializeComponent();
-
-        // TODO (Melissa - UI/UX): Improve layout and replace Description with proper Price input
-
-        // TODO (Isabella - Integration): Ensure this page is correctly routed in AppShell
-    }
+	{
+		InitializeComponent();
+	}
 
     private async void OnAddItemClicked(object sender, EventArgs e)
     {
@@ -30,12 +27,16 @@ public partial class AddItemPage : ContentPage
         // TODO (Isabella - Navigation): Navigate back to GroceryListPage after adding item
     }
 
-    private async void OnDeleteItemClicked(object sender, EventArgs e)
-    {
-        // TODO (Christopher - Backend): Delete item from database
+	private async void OnDeleteItemClicked(object sender, EventArgs e)
+	{
+		// TODO (Melissa - UI/UX): Add confirmation alert before deleting item
+		bool confirm = await DisplayAlert(
+			"Delete Item",
+			"Are you sure you want to delete this item?",
+			"Yes",
+			"No");
+		if (!confirm)
+			return;
 
-        // TODO (Isabella - Integration): Refresh GroceryListPage after deletion
-
-        // TODO (Melissa - UI/UX): Add confirmation alert before deleting item
     }
 }
