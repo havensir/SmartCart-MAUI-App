@@ -30,8 +30,6 @@
                     <x:String>Frozen</x:String>
                 </Picker.Items>
             </Picker>
-                    
-            
 
             <Button Text="+ Add Item To Cart"
                     Style="{StaticResource PrimaryButton}"
