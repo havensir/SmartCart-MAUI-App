@@ -1,26 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
+using SmartCart.Database;
+using SmartCart.Models;
+using SmartCart.Services;
 
 namespace SmartCart.ViewModels
 {
     public class BudgetViewModel : INotifyPropertyChanged
     {
-        // Fields
-        private string _budgetName;
-        private string _budgetAmount;
+        private readonly DatabaseService _databaseService;
+        private readonly BudgetService _budgetService;
 
+        private string _budgetName = string.Empty;
+        private string _budgetAmount = string.Empty;
+        private string _budgetNotes = string.Empty;
         private bool _isWeekly;
         private bool _isBiWeekly;
-        private bool _isMonthly;
-
+        private bool _isMonthly = true;
         private double _budgetProgress;
-        private string _budgetSummaryText;
-        private string _remainingBudgetText;
-
+        private string _budgetSummaryText = "$0.00 spent of $0.00";
+        private string _remainingBudgetText = "$0.00 Remaining";
+        private decimal _remainingBudget;
+        private decimal _parsedBudgetAmount;
 
         public string BudgetName
         {
@@ -28,14 +34,18 @@ namespace SmartCart.ViewModels
             set => SetProperty(ref _budgetName, value);
         }
 
-        // Bound to Entry in the UI
         public string BudgetAmount
         {
             get => _budgetAmount;
             set => SetProperty(ref _budgetAmount, value);
         }
 
-        // Budget Period Selection (Mutually Exclusive)
+        public string BudgetNotes
+        {
+            get => _budgetNotes;
+            set => SetProperty(ref _budgetNotes, value);
+        }
+
         public bool IsWeekly
         {
             get => _isWeekly;
@@ -78,13 +88,11 @@ namespace SmartCart.ViewModels
             }
         }
 
-        // Computed period string
         public string BudgetPeriod =>
             IsWeekly ? "Weekly" :
             IsBiWeekly ? "Bi-Weekly" :
             IsMonthly ? "Monthly" : "Not selected";
 
-        // Calculated Properties
         public double BudgetProgress
         {
             get => _budgetProgress;
@@ -103,21 +111,31 @@ namespace SmartCart.ViewModels
             set => SetProperty(ref _remainingBudgetText, value);
         }
 
-        public decimal RemainingBudget { get; private set; }
+        public decimal RemainingBudget
+        {
+            get => _remainingBudget;
+            private set
+            {
+                if (SetProperty(ref _remainingBudget, value))
+                {
+                    OnPropertyChanged(nameof(IsOverBudget));
+                    OnPropertyChanged(nameof(IsNearBudget));
+                }
+            }
+        }
+
         public bool IsOverBudget => RemainingBudget < 0;
-        public bool IsNearBudget => RemainingBudget >= 0 && RemainingBudget <= ParsedBudgetAmount * 0.1m;
+        public bool IsNearBudget => RemainingBudget >= 0 && _parsedBudgetAmount > 0 && RemainingBudget <= _parsedBudgetAmount * 0.1m;
 
-        private decimal ParsedBudgetAmount { get; set; }
-
-        // Command
         public ICommand SaveBudgetCommand { get; }
 
-        public BudgetViewModel()
+        public BudgetViewModel(DatabaseService databaseService)
         {
+            _databaseService = databaseService;
+            _budgetService = new BudgetService();
             SaveBudgetCommand = new Command(async () => await OnSaveBudget());
         }
 
-        // Save Budget Logic
         private async Task OnSaveBudget()
         {
             if (string.IsNullOrWhiteSpace(BudgetName))
@@ -132,23 +150,21 @@ namespace SmartCart.ViewModels
                 return;
             }
 
-            ParsedBudgetAmount = amount;
+            _parsedBudgetAmount = amount;
 
-            // No spending yet
-            decimal spent = 0m;
-            RemainingBudget = amount;
+            var budget = new Budget
+            {
+                BudgetName = BudgetName.Trim(),
+                Amount = amount,
+                Limit = amount,
+                Remaining = amount,
+                IsNearBudget = false,
+                IsOverBudget = false
+            };
 
-            // Update UI Properties
-            BudgetSummaryText = $"${spent:F2} spent of ${amount:F2}";
-            RemainingBudgetText = $"${RemainingBudget:F2} Remaining";
-            BudgetProgress = 0; // 0% spent
+            await _databaseService.SaveBudgetAsync(budget);
 
-            OnPropertyChanged(nameof(RemainingBudget));
-            OnPropertyChanged(nameof(IsOverBudget));
-            OnPropertyChanged(nameof(IsNearBudget));
-            OnPropertyChanged(nameof(BudgetSummaryText));
-            OnPropertyChanged(nameof(RemainingBudgetText));
-            OnPropertyChanged(nameof(BudgetProgress));
+            UpdateBudgetDisplay(amount, 0m);
 
             await Shell.Current.DisplayAlert(
                 "Saved",
@@ -158,7 +174,16 @@ namespace SmartCart.ViewModels
             await Shell.Current.GoToAsync("..");
         }
 
-        // INotifyPropertyChanged Implementation
+        private void UpdateBudgetDisplay(decimal budgetLimit, decimal spent)
+        {
+            RemainingBudget = _budgetService.CalculateRemaining(budgetLimit, spent);
+            BudgetSummaryText = $"{spent:C} spent of {budgetLimit:C}";
+            RemainingBudgetText = $"{RemainingBudget:C} Remaining";
+
+            var rawProgress = budgetLimit > 0 ? (double)(spent / budgetLimit) : 0d;
+            BudgetProgress = Math.Max(0d, Math.Min(1d, rawProgress));
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected bool SetProperty<T>(ref T backingStore, T value,
@@ -172,7 +197,7 @@ namespace SmartCart.ViewModels
             return true;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

@@ -109,8 +109,8 @@
 
                         <Button Text="Create a Budget"
                         Clicked="OnCreateBudgetClicked"
-                        BackgroundColor="#4CAF50"      
-                        TextColor="Black"
+                        BackgroundColor="#2E7D32"      
+                        TextColor="White"
                         FontAttributes="Bold"
                         HeightRequest="30"
                         FontSize="12"

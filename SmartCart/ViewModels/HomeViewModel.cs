@@ -100,7 +100,9 @@ namespace SmartCart.ViewModels
             var lists = await _databaseService.GetListsAsync();
 
             GroceryList.Clear();
-            foreach (var list in lists)
+            foreach (var list in lists
+                .OrderByDescending(l => l.CreatedDate)
+                .ThenByDescending(l => l.ListId))
             {
                 GroceryList.Add(list);
             }
@@ -128,9 +130,11 @@ namespace SmartCart.ViewModels
             RemainingBudget = BudgetAmount - spent;
             BudgetSummaryText = $"{spent:C} spent of {BudgetAmount:C}";
             RemainingBudgetText = $"{RemainingBudget:C} Remaining";
-            BudgetProgress = BudgetAmount > 0
+            var rawProgress = BudgetAmount > 0
                 ? (double)(spent / BudgetAmount)
                 : 0;
+
+            BudgetProgress = Math.Max(0, Math.Min(1, rawProgress));
         }
 
         // Helper Method to Calculate List Total
