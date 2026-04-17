@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-//Budget logic 
+﻿using Microsoft.Maui.Graphics;
 
 namespace SmartCart.Services
 {
@@ -23,6 +17,17 @@ namespace SmartCart.Services
         public bool IsNearBudget(decimal budgetLimit, decimal currentTotal)
         {
             return budgetLimit > 0 && currentTotal >= budgetLimit * 0.9m;
+        }
+
+        public Color GetBudgetStatusColor(decimal budgetLimit, decimal remaining)
+        {
+            if (remaining < 0)
+                return Colors.Red;
+
+            if (remaining <= budgetLimit * 0.1m)
+                return Colors.Yellow;
+
+            return Colors.Green;
         }
     }
 }

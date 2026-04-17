@@ -2,8 +2,10 @@
 using SmartCart.Models;
 using SmartCart.Services;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
 
 namespace SmartCart.ViewModels
 {
@@ -17,7 +19,7 @@ namespace SmartCart.ViewModels
         private readonly GroceryListService _service = new();
         private readonly SmartCartDatabase _database;
 
-        public List<GroceryItem> Items { get; set; } = new();
+        public ObservableCollection<GroceryItem> Items { get; set; }
 
         private decimal _total;
         public decimal Total
@@ -32,6 +34,10 @@ namespace SmartCart.ViewModels
 
         private GroceryListViewModel(SmartCartDatabase database)
         {
+            // TODO (Christopher - Backend): Replace hardcoded data with SQLite-loaded data
+            
+            // TODO (Isabella - Integration): Ensure this loads when navigating to page
+
             // Can me modified or removed after more logic is added
 
             _database = database;
@@ -47,7 +53,8 @@ namespace SmartCart.ViewModels
 
             OnPropertyChanged(nameof(Items));
 
-            UpdateTotals(Items);
+            UpdateTotals(Items.ToList());
+            // TODO (Xander - Logic): Connect budget calculations here
         }
 
         public async Task AddItemsAsync(GroceryItem item) 
@@ -70,6 +77,9 @@ namespace SmartCart.ViewModels
 
         public void UpdateTotals(List<GroceryItem> items)
         {
+            // TODO (Xander - Logic): Add item count tracking
+            // TODO (Xander - Logic): Trigger budget warnings (near/over)
+
             Total = _service.CalculateTotal(items);
         }
 

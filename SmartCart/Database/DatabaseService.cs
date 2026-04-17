@@ -1,16 +1,15 @@
+using SmartCart.Models;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SmartCart.Models;
-
-//DB CRUD operations
 
 namespace SmartCart.Database
 {
-    internal class DatabaseService
+    // DB CRUD operations
+    public class DatabaseService
     {
         private readonly SmartCartDatabase _database;
 
@@ -19,6 +18,7 @@ namespace SmartCart.Database
             _database = new SmartCartDatabase(dbPath);
         }
 
+        // Grocery Lists
         public Task<List<GroceryList>> GetListsAsync()
         {
             return _database.GetListsAsync();
@@ -34,6 +34,7 @@ namespace SmartCart.Database
             return _database.SaveListAsync(list);
         }
 
+        // Grocery Items
         public Task<List<GroceryItem>> GetItemsAsync(int listId)
         {
             return _database.GetItemsAsync(listId);
@@ -49,6 +50,7 @@ namespace SmartCart.Database
             return _database.DeleteItemAsync(item);
         }
 
+        // Budgets
         public Task<List<Budget>> GetBudgetsAsync()
         {
             return _database.GetBudgetsAsync();
@@ -63,5 +65,13 @@ namespace SmartCart.Database
         {
             return _database.DeleteBudgetAsync(budget);
         }
+
+        public async Task<decimal> GetTotalSpentAsync()
+        {
+            var items = await _database.GetItemsAsync(0);
+            return items.Sum(i => i.Price * i.Quantity);
+        }
+
+
     }
 }

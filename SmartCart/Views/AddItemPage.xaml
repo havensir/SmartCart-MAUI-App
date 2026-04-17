@@ -7,9 +7,23 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
-            <Label Text="Add Grocery Item"
-             Style="{StaticResource PageTitle}"/>
+            
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="Add Grocery Item"
+                       Style="{StaticResource PageTitle}"/>
 
+                <Image Grid.Column="1"
+                       Source="cart.png"
+                       WidthRequest="26"
+                       HeightRequest="26">
+                
+                    
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCartTapped"/>
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+            
             <Entry x:Name="NameEntry"
                    Placeholder="Item Name"/>
             
@@ -30,8 +44,6 @@
                     <x:String>Frozen</x:String>
                 </Picker.Items>
             </Picker>
-                    
-            
 
             <Button Text="+ Add Item To Cart"
                     Style="{StaticResource PrimaryButton}"
