@@ -47,7 +47,7 @@
                     Text="{Binding BudgetNotes}"
                     HeightRequest="100"/>
 
-            <Button Text="Save"
+            <Button Text="Submit"
                     Command="{Binding SaveBudgetCommand}"
                     Style="{StaticResource PrimaryButton}"/>
 
