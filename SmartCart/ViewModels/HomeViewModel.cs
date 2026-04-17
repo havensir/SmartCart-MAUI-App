@@ -23,7 +23,7 @@ namespace SmartCart.ViewModels
         // INotifyPropertyChanged Implementation
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -37,6 +37,7 @@ namespace SmartCart.ViewModels
         private double _budgetProgress;
         private string _budgetSummaryText = string.Empty;
         private string _remainingBudgetText = string.Empty;
+        private string _budgetName = string.Empty;
 
         // Budget Properties
         public decimal BudgetAmount

@@ -24,7 +24,7 @@ public partial class GroceryListPage : ContentPage
         if (item != null && vm != null)
         {
             item.Quantity++;
-            vm.UpdateTotals(vm.Items);
+            vm.UpdateTotals(vm.Items.ToList());
         }
 
         // TODO (Isabella - Integration): REMOVE BindingContext reset once INotifyPropertyChanged is fixed
@@ -43,7 +43,7 @@ public partial class GroceryListPage : ContentPage
         if (item != null && vm != null && item.Quantity > 0)
         {
             item.Quantity--;
-            vm.UpdateTotals(vm.Items);
+            vm.UpdateTotals(vm.Items.ToList());
         }
 
         // TODO (Isabella - Integration): REMOVE BindingContext reset once binding is fixed

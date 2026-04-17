@@ -1,4 +1,5 @@
-﻿using SmartCart.Models;
+﻿using SmartCart.Database;
+using SmartCart.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace SmartCart.Services
     {
         public ObservableCollection<GroceryItem> Items { get; } = new();
 
-        // 🔔 Event to notify ViewModels when cart changes
+        // Event to notify ViewModels when cart changes
         public event Action? CartUpdated;
 
         public decimal Total => Items.Sum(i => i.TotalCost);

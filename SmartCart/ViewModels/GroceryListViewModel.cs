@@ -2,6 +2,7 @@
 using SmartCart.Models;
 using SmartCart.Services;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -18,7 +19,7 @@ namespace SmartCart.ViewModels
         private readonly GroceryListService _service = new();
         private readonly SmartCartDatabase _database;
 
-        public List<GroceryItem> Items { get; set; } = new();
+        public ObservableCollection<GroceryItem> Items { get; set; }
 
         private decimal _total;
         public decimal Total
@@ -38,13 +39,13 @@ namespace SmartCart.ViewModels
             // TODO (Isabella - Integration): Ensure this loads when navigating to page
 
             // Can me modified or removed after more logic is added
-            Items = new List<GroceryItem>
+            Items = new ObservableCollection<GroceryItem>
             {
                 new GroceryItem { Name = "Milk", Price = 3.50m, Quantity = 0 },
                 new GroceryItem { Name = "Fruit", Price = 3.75m, Quantity = 0 },
             };
 
-            UpdateTotals(Items);
+            UpdateTotals(Items.ToList());
             // TODO (Xander - Logic): Connect budget calculations here
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SmartCart.Database;
+using SmartCart.Services;
 using SmartCart.ViewModels;
 using SmartCart.Views;
 
@@ -29,6 +30,8 @@ namespace SmartCart
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, "smartcart.db");
                 return new DatabaseService(dbPath);
             });
+
+            builder.Services.AddSingleton<CartService>();
 
             // Register ViewModels
             builder.Services.AddSingleton<HomeViewModel>();
