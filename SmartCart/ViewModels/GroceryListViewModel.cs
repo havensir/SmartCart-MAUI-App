@@ -32,22 +32,48 @@ namespace SmartCart.ViewModels
             }
         }
 
-        public GroceryListViewModel()
+        private GroceryListViewModel(SmartCartDatabase database)
         {
             // TODO (Christopher - Backend): Replace hardcoded data with SQLite-loaded data
             
             // TODO (Isabella - Integration): Ensure this loads when navigating to page
 
             // Can me modified or removed after more logic is added
-            Items = new ObservableCollection<GroceryItem>
-            {
-                new GroceryItem { Name = "Milk", Price = 3.50m, Quantity = 0 },
-                new GroceryItem { Name = "Fruit", Price = 3.75m, Quantity = 0 },
-            };
+
+            _database = database;
+
+        }
+
+        public async Task LoadItemsAsync() 
+        {
+        
+            if (ListId == 0) return;
+
+            Items = await _database.GetItemsAsync(ListId);
+
+            OnPropertyChanged(nameof(Items));
 
             UpdateTotals(Items.ToList());
             // TODO (Xander - Logic): Connect budget calculations here
         }
+
+        public async Task AddItemsAsync(GroceryItem item) 
+        {
+            item.ListId = ListId;
+
+            await _database.SaveItemAsync(item);
+
+            await LoadItemsAsync();
+        }
+
+        public async Task DeleteItemsAsync(GroceryItem item) 
+        {
+
+            await _database.DeleteItemAsync(item);
+
+            await LoadItemsAsync();
+        }
+
 
         public void UpdateTotals(List<GroceryItem> items)
         {
