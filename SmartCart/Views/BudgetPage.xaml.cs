@@ -11,6 +11,15 @@ public partial class BudgetPage : ContentPage
         BindingContext = viewModel;
     }
 
-        // TODO (Isabella - Integration): Set BindingContext to BudgetViewModel
-        // TODO (Melissa - UI/UX): Improve layout and readability
+    // TODO (Isabella - Integration): Set BindingContext to BudgetViewModel
+    // TODO (Melissa - UI/UX): Improve layout and readability
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is BudgetViewModel vm)
+        {
+            await vm.LoadBudgetAsync();
+        }
+    }
 }

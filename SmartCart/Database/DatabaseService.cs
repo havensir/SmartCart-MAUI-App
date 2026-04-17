@@ -51,9 +51,10 @@ namespace SmartCart.Database
         }
 
         // Budgets
-        public Task<List<Budget>> GetBudgetsAsync()
+        public async Task<Budget?> GetCurrentBudgetAsync()
         {
-            return _database.GetBudgetsAsync();
+            var budgets = await _database.GetBudgetsAsync();
+            return budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
         }
 
         public Task<int> SaveBudgetAsync(Budget budget)

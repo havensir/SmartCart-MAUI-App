@@ -1,5 +1,6 @@
 ﻿using SmartCart.Database;
 using SmartCart.Models;
+using SmartCart.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,12 +12,14 @@ namespace SmartCart.ViewModels
 {
     public class HomeViewModel : INotifyPropertyChanged
     {
+        private readonly CartService _cartService;
         private readonly DatabaseService _databaseService;
 
         // Constructor
-        public HomeViewModel(DatabaseService databaseService)
+        public HomeViewModel(DatabaseService databaseService, CartService cartService)
         {
             _databaseService = databaseService;
+            _cartService = cartService;
             GroceryList = new ObservableCollection<GroceryList>();
         }
 
@@ -112,8 +115,7 @@ namespace SmartCart.ViewModels
         // Load Budget and Calculate Remaining Amount
         public async Task LoadBudgetAsync(int currentListId)
         {
-            var budgets = await _databaseService.GetBudgetsAsync();
-            var budget = budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
+            var budget = await _databaseService.GetCurrentBudgetAsync();
 
             if (budget == null)
             {

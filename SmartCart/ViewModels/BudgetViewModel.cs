@@ -1,9 +1,10 @@
 ﻿using SmartCart.Database;
+using SmartCart.Models;
 using SmartCart.Services;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using SmartCart.Models;
 
 namespace SmartCart.ViewModels
 {
@@ -11,6 +12,7 @@ namespace SmartCart.ViewModels
     {
         private readonly DatabaseService _databaseService;
         private readonly BudgetService _budgetService;
+        private readonly CartService _cartService;
 
         private decimal _parsedBudgetAmount;
 
@@ -51,6 +53,7 @@ namespace SmartCart.ViewModels
         {
             _databaseService = databaseService;
             _budgetService = new BudgetService();
+            _cartService = cartService; // <-- Store cartService for later use
 
             SaveBudgetCommand = new Command(async () => await OnSaveBudget());
 
@@ -168,6 +171,8 @@ namespace SmartCart.ViewModels
         // Save Budget Logic
         private async Task OnSaveBudget()
         {
+            var existing = await _databaseService.GetCurrentBudgetAsync();
+
             if (string.IsNullOrWhiteSpace(BudgetName))
             {
                 await Shell.Current.DisplayAlert("Error", "Budget name is required.", "OK");
@@ -182,19 +187,35 @@ namespace SmartCart.ViewModels
 
             _parsedBudgetAmount = amount;
 
-            // SAVE TO DATABASE
-            var budget = new Budget
+            if (existing != null)
             {
-                BudgetName = BudgetName.Trim(),
-                Amount = amount,
-                Limit = amount,
-                Remaining = amount
-            };
+                // UPDATE existing budget
+                existing.BudgetName = BudgetName.Trim();
+                existing.Amount = amount;
+                existing.Limit = amount;
+                existing.Remaining = amount;
 
-            await _databaseService.SaveBudgetAsync(budget);
+                await _databaseService.SaveBudgetAsync(existing);
+            }
+            else
+            {
+                // CREATE new budget
+                var budget = new Budget
+                {
+                    BudgetName = BudgetName.Trim(),
+                    Amount = amount,
+                    Limit = amount,
+                    Remaining = amount
+                };
 
-            // TODO: Replace with actual grocery total later
-            decimal spent = await _databaseService.GetTotalSpentAsync();
+                await _databaseService.SaveBudgetAsync(budget);
+            }
+
+            // Refresh UI
+            await LoadBudgetAsync();
+
+            // Update budget with current cart total
+            var spent = _cartService.Total;
             UpdateBudgetStatus(spent);
 
             await Shell.Current.DisplayAlert(
@@ -221,9 +242,7 @@ namespace SmartCart.ViewModels
 
         public async Task LoadBudgetAsync()
         {
-            // Get all budgets and select the latest one (by highest ID or most recent date)
-            var budgets = await _databaseService.GetBudgetsAsync();
-            var budget = budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
+            var budget = await _databaseService.GetCurrentBudgetAsync();
 
             if (budget != null)
             {
@@ -232,7 +251,9 @@ namespace SmartCart.ViewModels
 
                 _parsedBudgetAmount = budget.Amount;
 
-                var spent = 0m; // or cartService.Total later
+                System.Diagnostics.Debug.WriteLine($"Loaded Budget: {_parsedBudgetAmount}");
+
+                var spent = _cartService.Total;
                 UpdateBudgetStatus(spent);
             }
         }

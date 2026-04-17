@@ -17,11 +17,18 @@ namespace SmartCart.ViewModels
         public int BudgetId { get; set; }
 
         private readonly GroceryListService _service = new();
-        private readonly SmartCartDatabase _database;
+        private readonly DatabaseService _databaseService;
+        private readonly CartService _cartService;
 
-        public ObservableCollection<GroceryItem> Items { get; set; }
+        public ObservableCollection<GroceryItem> Items { get; set; } = new();
 
         private decimal _total;
+
+        public GroceryListViewModel(DatabaseService databaseService, CartService cartService)
+        {
+            _databaseService = databaseService;
+            _cartService = cartService;
+        }
         public decimal Total
         {
             get => _total;
@@ -32,24 +39,30 @@ namespace SmartCart.ViewModels
             }
         }
 
-        private GroceryListViewModel(SmartCartDatabase database)
+        public GroceryListViewModel(DatabaseService databaseService)
         {
             // TODO (Christopher - Backend): Replace hardcoded data with SQLite-loaded data
-            
+
             // TODO (Isabella - Integration): Ensure this loads when navigating to page
 
             // Can me modified or removed after more logic is added
 
-            _database = database;
+            _databaseService = databaseService;
 
         }
 
         public async Task LoadItemsAsync() 
         {
-        
             if (ListId == 0) return;
 
-            Items = await _database.GetItemsAsync(ListId);
+            var items = await _databaseService.GetItemsAsync(ListId);
+            Items = new ObservableCollection<GroceryItem>(items);
+            _cartService.ClearCart();
+
+            foreach (var item in Items)
+            {
+                _cartService.AddItem(item);
+            }
 
             OnPropertyChanged(nameof(Items));
 
@@ -61,7 +74,7 @@ namespace SmartCart.ViewModels
         {
             item.ListId = ListId;
 
-            await _database.SaveItemAsync(item);
+            await _databaseService.SaveItemAsync(item);
 
             await LoadItemsAsync();
         }
@@ -69,7 +82,7 @@ namespace SmartCart.ViewModels
         public async Task DeleteItemsAsync(GroceryItem item) 
         {
 
-            await _database.DeleteItemAsync(item);
+            await _databaseService.DeleteItemAsync(item);
 
             await LoadItemsAsync();
         }
@@ -80,7 +93,7 @@ namespace SmartCart.ViewModels
             // TODO (Xander - Logic): Add item count tracking
             // TODO (Xander - Logic): Trigger budget warnings (near/over)
 
-            Total = _service.CalculateTotal(items);
+            Total = _cartService.Total;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
