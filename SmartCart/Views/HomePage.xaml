@@ -18,8 +18,9 @@
 
                 <!-- Sign In -->
                 <VerticalStackLayout Grid.Column="1"
-                         HorizontalOptions="Center"
-                         Spacing="2">
+                     HorizontalOptions="Center"
+                     Padding="0,0,10,0"
+                     Spacing="2">
                     
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnSignInTapped"/>
@@ -30,7 +31,7 @@
                        WidthRequest="26"/>
                     
                     <Label Text="Sign In"
-                           FontSize="10"
+                           FontSize="12"
                            HorizontalTextAlignment="Center"/>
 
 
@@ -39,6 +40,7 @@
                 <!-- My Cart -->
                 <VerticalStackLayout Grid.Column="2"
                      HorizontalOptions="Center"
+                     Padding="0,0,10,0"
                      Spacing="2">
 
                     <VerticalStackLayout.GestureRecognizers>
@@ -50,13 +52,14 @@
            WidthRequest="26"/>
 
                     <Label Text="My Cart"
-           FontSize="10"
+           FontSize="12"
            HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
                 <!-- Share -->
                 <VerticalStackLayout Grid.Column="3"
                          HorizontalOptions="Center"
+                         Padding="0,0,0,0"
                          Spacing="2">
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnShareTapped"/>
@@ -66,7 +69,7 @@
                WidthRequest="26"/>
                     
                     <Label Text="Share"
-               FontSize="10"
+               FontSize="12"
                HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
@@ -132,7 +135,7 @@
                  Style="{StaticResource SectionTitle}"/>
 
             <ScrollView Orientation="Horizontal">
-                <HorizontalStackLayout Spacing="18">
+                <HorizontalStackLayout Spacing="10">
                     <VerticalStackLayout>
                         
                         <VerticalStackLayout.GestureRecognizers>
@@ -146,7 +149,7 @@
                             <Image Source="kroger.png"/>
                         </Border>
                         <Label Text="Kroger"
-                             FontSize="12"
+                             FontSize="14"
                              HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
 
@@ -156,7 +159,7 @@
                         <VerticalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Walmart"/>
                         </VerticalStackLayout.GestureRecognizers>
-                        
+
                         <Border WidthRequest="100"
                               HeightRequest="100"
                               StrokeShape="RoundRectangle 35"
@@ -164,7 +167,7 @@
                             <Image Source="walmart.png"/>
                         </Border>
                         <Label Text="Walmart"
-                             FontSize="12"
+                             FontSize="14"
                              HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
                     
@@ -173,7 +176,7 @@
                         <VerticalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Target"/>
                         </VerticalStackLayout.GestureRecognizers>
-                        
+
                         <Border WidthRequest="100"
                               HeightRequest="100"
                               StrokeShape="RoundRectangle 35"
@@ -181,7 +184,7 @@
                             <Image Source="target.png"/>
                         </Border>
                         <Label Text="Target"
-                             FontSize="12"
+                             FontSize="14"
                              HorizontalOptions="Center"/>
                     </VerticalStackLayout>
 
@@ -190,7 +193,6 @@
                         <VerticalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Aldi"/>
                         </VerticalStackLayout.GestureRecognizers>
-                        
                         <Border WidthRequest="100"
                               HeightRequest="100"
                               StrokeShape="RoundRectangle 35"
@@ -198,7 +200,7 @@
                             <Image Source="aldi.png"/>
                         </Border>
                         <Label Text="Aldi"
-                             FontSize="12"
+                             FontSize="14"
                              HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
 

@@ -3,6 +3,7 @@ using SmartCart.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using SmartCart.Models;
 
 namespace SmartCart.ViewModels
 {
@@ -11,29 +12,54 @@ namespace SmartCart.ViewModels
         private readonly DatabaseService _databaseService;
         private readonly BudgetService _budgetService;
 
+        private decimal _parsedBudgetAmount;
+
         private string _budgetName = string.Empty;
         private string _budgetAmount = string.Empty;
         private string _budgetNotes = string.Empty;
+
         private bool _isWeekly;
         private bool _isBiWeekly;
         private bool _isMonthly = true;
-        private double _budgetProgress;
-        private string _budgetSummaryText;
-        private string _remainingBudgetText;
 
-        //private string _budgetSummaryText = "$0.00 spent of $0.00";
-        //private string _remainingBudgetText = "$0.00 Remaining";
+        private double _budgetProgress;
+        private string _budgetSummaryText = "$0.00 spent of $0.00";
+        private string _remainingBudgetText = "$0.00 Remaining";
 
         private decimal _remainingBudget;
-        private decimal _parsedBudgetAmount;
 
-        //private readonly BudgetService _budgetService;
-
-        // Constructor
-        public BudgetViewModel()
+        public void UpdateBudgetStatus(decimal currentTotal)
         {
+            RemainingBudget = _budgetService.CalculateRemaining(_parsedBudgetAmount, currentTotal);
+
+            BudgetSummaryText = $"${currentTotal:F2} spent of ${_parsedBudgetAmount:F2}";
+            RemainingBudgetText = $"${RemainingBudget:F2} Remaining";
+
+            var rawProgress = _parsedBudgetAmount > 0
+                ? (double)(currentTotal / _parsedBudgetAmount)
+                : 0;
+
+            BudgetProgress = Math.Max(0, Math.Min(1, rawProgress));
+
+            OnPropertyChanged(nameof(IsOverBudget));
+            OnPropertyChanged(nameof(IsNearBudget));
+            OnPropertyChanged(nameof(ProgressBarColor));
+        }
+
+        // Constructor (DI FIXED)
+        public BudgetViewModel(DatabaseService databaseService, CartService cartService)
+        {
+            _databaseService = databaseService;
             _budgetService = new BudgetService();
+
             SaveBudgetCommand = new Command(async () => await OnSaveBudget());
+
+            // LISTEN TO CART CHANGES
+            cartService.CartUpdated += () =>
+            {
+                var spent = cartService.Total;
+                UpdateBudgetStatus(spent);
+            };
         }
 
         // Properties
@@ -49,13 +75,13 @@ namespace SmartCart.ViewModels
             set => SetProperty(ref _budgetAmount, value);
         }
 
-        // Budget Period Selection
         public string BudgetNotes
         {
             get => _budgetNotes;
             set => SetProperty(ref _budgetNotes, value);
         }
 
+        // Budget Period Selection
         public bool IsWeekly
         {
             get => _isWeekly;
@@ -127,36 +153,19 @@ namespace SmartCart.ViewModels
             private set => SetProperty(ref _remainingBudget, value);
         }
 
-        public Color ProgressBarColor =>
-            _budgetService.GetBudgetStatusColor(_parsedBudgetAmount, RemainingBudget);
-
         public bool IsOverBudget => RemainingBudget < 0;
 
-        //        public bool IsNearBudget =>
-        //            RemainingBudget >= 0 && RemainingBudget <= _parsedBudgetAmount * 0.1m;
-        //        private set
-        //            {
-        //                if (SetProperty(ref _remainingBudget, value))
-        //                {
-        //                    OnPropertyChanged(nameof(IsOverBudget));
-        //        OnPropertyChanged(nameof(IsNearBudget));
-        //    }
-        //}
-        //        }
+        public bool IsNearBudget =>
+            RemainingBudget >= 0 &&
+            _parsedBudgetAmount > 0 &&
+            RemainingBudget <= _parsedBudgetAmount * 0.1m;
 
-        //public bool IsOverBudget => RemainingBudget < 0;
-        public bool IsNearBudget => RemainingBudget >= 0 && _parsedBudgetAmount > 0 && RemainingBudget <= _parsedBudgetAmount * 0.1m;
+        public Color ProgressBarColor =>
+            _budgetService.GetBudgetStatusColor(_parsedBudgetAmount, RemainingBudget);
 
         public ICommand SaveBudgetCommand { get; }
 
         // Save Budget Logic
-        //public BudgetViewModel(DatabaseService databaseService)
-        //{
-        //    _databaseService = databaseService;
-        //    _budgetService = new BudgetService();
-        //    SaveBudgetCommand = new Command(async () => await OnSaveBudget());
-        //}
-
         private async Task OnSaveBudget()
         {
             if (string.IsNullOrWhiteSpace(BudgetName))
@@ -173,7 +182,19 @@ namespace SmartCart.ViewModels
 
             _parsedBudgetAmount = amount;
 
-            decimal spent = 0m;
+            // SAVE TO DATABASE
+            var budget = new Budget
+            {
+                BudgetName = BudgetName.Trim(),
+                Amount = amount,
+                Limit = amount,
+                Remaining = amount
+            };
+
+            await _databaseService.SaveBudgetAsync(budget);
+
+            // TODO: Replace with actual grocery total later
+            decimal spent = await _databaseService.GetTotalSpentAsync();
             UpdateBudgetStatus(spent);
 
             await Shell.Current.DisplayAlert(
@@ -184,59 +205,6 @@ namespace SmartCart.ViewModels
             await Shell.Current.GoToAsync("..");
         }
 
-
-        public void UpdateBudgetStatus(decimal currentTotal)
-        {
-            RemainingBudget = _budgetService.CalculateRemaining(_parsedBudgetAmount, currentTotal);
-
-            BudgetSummaryText = $"${currentTotal:F2} spent of ${_parsedBudgetAmount:F2}";
-            RemainingBudgetText = $"${RemainingBudget:F2} Remaining";
-
-            BudgetProgress = _parsedBudgetAmount == 0
-                ? 0
-                : (double)(currentTotal / _parsedBudgetAmount);
-
-            // Notify UI updates
-            OnPropertyChanged(nameof(IsOverBudget));
-            OnPropertyChanged(nameof(IsNearBudget));
-            OnPropertyChanged(nameof(ProgressBarColor));
-            OnPropertyChanged(nameof(BudgetSummaryText));
-            OnPropertyChanged(nameof(RemainingBudgetText));
-            OnPropertyChanged(nameof(BudgetProgress));
-        }
-
-        // INotifyPropertyChanged
-        //    var budget = new Budget
-        //    {
-        //        BudgetName = BudgetName.Trim(),
-        //        Amount = amount,
-        //        Limit = amount,
-        //        Remaining = amount,
-        //        IsNearBudget = false,
-        //        IsOverBudget = false
-        //    };
-
-        //    await _databaseService.SaveBudgetAsync(budget);
-
-        //    UpdateBudgetDisplay(amount, 0m);
-
-        //    await Shell.Current.DisplayAlert(
-        //        "Saved",
-        //        $"Budget '{BudgetName}' saved successfully!\n\nAmount: ${amount:F2}\n\nPeriod: {BudgetPeriod}",
-        //        "OK");
-
-        //    await Shell.Current.GoToAsync("..");
-        //}
-
-        //private void UpdateBudgetDisplay(decimal budgetLimit, decimal spent)
-        //{
-        //    RemainingBudget = _budgetService.CalculateRemaining(budgetLimit, spent);
-        //    BudgetSummaryText = $"{spent:C} spent of {budgetLimit:C}";
-        //    RemainingBudgetText = $"{RemainingBudget:C} Remaining";
-
-        //    var rawProgress = budgetLimit > 0 ? (double)(spent / budgetLimit) : 0d;
-        //    BudgetProgress = Math.Max(0d, Math.Min(1d, rawProgress));
-        //}
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -249,6 +217,24 @@ namespace SmartCart.ViewModels
             backingStore = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+
+        public async Task LoadBudgetAsync()
+        {
+            // Get all budgets and select the latest one (by highest ID or most recent date)
+            var budgets = await _databaseService.GetBudgetsAsync();
+            var budget = budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
+
+            if (budget != null)
+            {
+                BudgetName = budget.BudgetName;
+                BudgetAmount = budget.Amount.ToString();
+
+                _parsedBudgetAmount = budget.Amount;
+
+                var spent = 0m; // or cartService.Total later
+                UpdateBudgetStatus(spent);
+            }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)

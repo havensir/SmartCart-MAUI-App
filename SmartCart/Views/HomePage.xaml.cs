@@ -86,7 +86,7 @@ public partial class HomePage : ContentPage
 
     private async void OnCartTapped(object sender, EventArgs e)
     {
-
+        // TODO: Implement cart tapped logic here
     }
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
