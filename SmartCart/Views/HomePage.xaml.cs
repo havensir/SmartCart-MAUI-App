@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using SmartCart.ViewModels;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 
 namespace SmartCart.Views;
 
@@ -73,6 +74,20 @@ public partial class HomePage : ContentPage
         }
     }
 
+    private async void OnShareTapped(object sender, EventArgs e)
+    {
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = "Share SmartCart",
+            Text = "Check out SmartCart! Easily manage your grocery lists and budget.",
+            Uri = "https://smartcart.com"
+        });
+    }
+
+    private async void OnCartTapped(object sender, EventArgs e)
+    {
+
+    }
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(BudgetPage));

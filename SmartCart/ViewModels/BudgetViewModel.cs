@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using SmartCart.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -7,7 +10,6 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using SmartCart.Database;
 using SmartCart.Models;
-using SmartCart.Services;
 
 namespace SmartCart.ViewModels
 {
@@ -23,11 +25,25 @@ namespace SmartCart.ViewModels
         private bool _isBiWeekly;
         private bool _isMonthly = true;
         private double _budgetProgress;
-        private string _budgetSummaryText = "$0.00 spent of $0.00";
-        private string _remainingBudgetText = "$0.00 Remaining";
+        private string _budgetSummaryText;
+        private string _remainingBudgetText;
+
+//         private string _budgetSummaryText = "$0.00 spent of $0.00";
+//         private string _remainingBudgetText = "$0.00 Remaining";
+
         private decimal _remainingBudget;
         private decimal _parsedBudgetAmount;
 
+        private readonly BudgetService _budgetService;
+
+        // Constructor
+        public BudgetViewModel()
+        {
+            _budgetService = new BudgetService(); 
+            SaveBudgetCommand = new Command(async () => await OnSaveBudget());
+        }
+
+        // Properties
         public string BudgetName
         {
             get => _budgetName;
@@ -40,6 +56,7 @@ namespace SmartCart.ViewModels
             set => SetProperty(ref _budgetAmount, value);
         }
 
+        // Budget Period Selection
         public string BudgetNotes
         {
             get => _budgetNotes;
@@ -114,6 +131,16 @@ namespace SmartCart.ViewModels
         public decimal RemainingBudget
         {
             get => _remainingBudget;
+            private set => SetProperty(ref _remainingBudget, value);
+        }
+
+        public Color ProgressBarColor =>
+            _budgetService.GetBudgetStatusColor(_parsedBudgetAmount, RemainingBudget);
+
+        public bool IsOverBudget => RemainingBudget < 0;
+
+        public bool IsNearBudget =>
+            RemainingBudget >= 0 && RemainingBudget <= _parsedBudgetAmount * 0.1m;
             private set
             {
                 if (SetProperty(ref _remainingBudget, value))
@@ -129,6 +156,7 @@ namespace SmartCart.ViewModels
 
         public ICommand SaveBudgetCommand { get; }
 
+        // Save Budget Logic
         public BudgetViewModel(DatabaseService databaseService)
         {
             _databaseService = databaseService;
@@ -152,6 +180,39 @@ namespace SmartCart.ViewModels
 
             _parsedBudgetAmount = amount;
 
+            decimal spent = 0m;
+            UpdateBudgetStatus(spent);
+
+            await Shell.Current.DisplayAlert(
+                "Saved",
+                $"Budget '{BudgetName}' saved successfully!\n\nAmount: ${amount:F2}\n\nPeriod: {BudgetPeriod}",
+                "OK");
+
+            await Shell.Current.GoToAsync("..");
+        }
+
+        
+        public void UpdateBudgetStatus(decimal currentTotal)
+        {
+            RemainingBudget = _budgetService.CalculateRemaining(_parsedBudgetAmount, currentTotal);
+
+            BudgetSummaryText = $"${currentTotal:F2} spent of ${_parsedBudgetAmount:F2}";
+            RemainingBudgetText = $"${RemainingBudget:F2} Remaining";
+
+            BudgetProgress = _parsedBudgetAmount == 0
+                ? 0
+                : (double)(currentTotal / _parsedBudgetAmount);
+
+            // Notify UI updates
+            OnPropertyChanged(nameof(IsOverBudget));
+            OnPropertyChanged(nameof(IsNearBudget));
+            OnPropertyChanged(nameof(ProgressBarColor));
+            OnPropertyChanged(nameof(BudgetSummaryText));
+            OnPropertyChanged(nameof(RemainingBudgetText));
+            OnPropertyChanged(nameof(BudgetProgress));
+        }
+
+        // INotifyPropertyChanged
             var budget = new Budget
             {
                 BudgetName = BudgetName.Trim(),
