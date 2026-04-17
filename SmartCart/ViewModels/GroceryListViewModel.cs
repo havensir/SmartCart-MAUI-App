@@ -30,19 +30,43 @@ namespace SmartCart.ViewModels
             }
         }
 
-        public GroceryListViewModel()
+        private GroceryListViewModel(SmartCartDatabase database)
         {
             // Can me modified or removed after more logic is added
-            Items = new List<GroceryItem>
-            {
-                new GroceryItem { Name = "Dairy", Price = 3.50m, Quantity = 1 },
-                new GroceryItem { Name = "Bread", Price = 2.00m, Quantity = 1 },
-                new GroceryItem { Name = "Fruit", Price = 3.75m, Quantity = 1 },
-                new GroceryItem { Name = "Vegetables", Price = 3.75m, Quantity = 1 },
-            };
+
+            _database = database;
+
+        }
+
+        public async Task LoadItemsAsync() 
+        {
+        
+            if (ListId == 0) return;
+
+            Items = await _database.GetItemsAsync(ListId);
+
+            OnPropertyChanged(nameof(Items));
 
             UpdateTotals(Items);
         }
+
+        public async Task AddItemsAsync(GroceryItem item) 
+        {
+            item.ListId = ListId;
+
+            await _database.SaveItemAsync(item);
+
+            await LoadItemsAsync();
+        }
+
+        public async Task DeleteItemsAsync(GroceryItem item) 
+        {
+
+            await _database.DeleteItemAsync(item);
+
+            await LoadItemsAsync();
+        }
+
 
         public void UpdateTotals(List<GroceryItem> items)
         {
