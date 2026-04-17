@@ -26,8 +26,12 @@ public partial class AddItemPage : ContentPage
         // TODO (Isabella - Integration): Pass new item back to GroceryListViewModel
         // TODO (Isabella - Navigation): Navigate back to GroceryListPage after adding item
     }
+    private async void OnCartTapped(object sender, EventArgs e)
+    {
 
-	private async void OnDeleteItemClicked(object sender, EventArgs e)
+    }
+
+    private async void OnDeleteItemClicked(object sender, EventArgs e)
 	{
 		// TODO (Melissa - UI/UX): Add confirmation alert before deleting item
 		bool confirm = await DisplayAlert(

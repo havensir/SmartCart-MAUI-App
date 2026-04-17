@@ -6,6 +6,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
             <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="0,10">
+                
 
                 <!-- Title -->
                 <Label Text="{Binding WelcomeText}" 
@@ -37,26 +38,33 @@
 
                 <!-- My Cart -->
                 <VerticalStackLayout Grid.Column="2"
-                         HorizontalOptions="Center"
-                         Spacing="2">
-                    
-                 
-                    
+                     HorizontalOptions="Center"
+                     Spacing="2">
+
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCartTapped"/>
+                    </VerticalStackLayout.GestureRecognizers>
+
                     <Image Source="cart.png"
-               HeightRequest="26"
-               WidthRequest="26"/>
+           HeightRequest="26"
+           WidthRequest="26"/>
+
                     <Label Text="My Cart"
-               FontSize="10"
-               HorizontalTextAlignment="Center"/>
+           FontSize="10"
+           HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
                 <!-- Share -->
                 <VerticalStackLayout Grid.Column="3"
                          HorizontalOptions="Center"
                          Spacing="2">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnShareTapped"/>
+                    </VerticalStackLayout.GestureRecognizers>
                     <Image Source="share.png"
                HeightRequest="26"
                WidthRequest="26"/>
+                    
                     <Label Text="Share"
                FontSize="10"
                HorizontalTextAlignment="Center"/>
