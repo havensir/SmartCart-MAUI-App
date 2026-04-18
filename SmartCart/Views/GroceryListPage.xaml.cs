@@ -1,3 +1,4 @@
+﻿
 using SmartCart.Models;
 using SmartCart.ViewModels;
 
@@ -54,6 +55,33 @@ public partial class GroceryListPage : ContentPage
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         // TODO (Xander - Logic): Implement search/filter logic
-        // TODO (Melissa - UI/UX): Improve search bar styling and placement
+        // Added search and filter logic by Melissa
+        string searchText = e.NewTextValue?.ToLower();
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            _viewModel.LoadDefaultItems();
+            RefreshPage();
+            return;
+        }
+
+        var filtered = _viewModel.Items
+            .Where(x => x.Name.ToLower().Contains(searchText))
+            .ToList();
+
+        _viewModel.Items.Clear();
+
+        foreach (var item in filtered)
+        {
+            _viewModel.Items.Add(item);
+        }
+
+        RefreshPage();
+    }
+
+        private void RefreshPage()
+    {
+        BindingContext = null;
+        BindingContext = _viewModel;
     }
 }

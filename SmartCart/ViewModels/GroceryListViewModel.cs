@@ -20,6 +20,7 @@ namespace SmartCart.ViewModels
         private readonly SmartCartDatabase _database;
 
         public ObservableCollection<GroceryItem> Items { get; set; }
+        private List<GroceryItem> _allItems = new();
 
         private decimal _total;
         public decimal Total
@@ -29,6 +30,16 @@ namespace SmartCart.ViewModels
             {
                 _total = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public void LoadDefaultItems()
+        {
+            Items.Clear();
+
+            foreach (var item in _allItems)
+            {
+                Items.Add(item);
             }
         }
 
