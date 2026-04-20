@@ -11,13 +11,19 @@
             <Grid ColumnDefinitions="*,Auto">
                 <Label Text="Add Grocery Item"
                        Style="{StaticResource PageTitle}"/>
-
+                
+                <VerticalStackLayout Grid.Column="1"
+                                       HorizontalOptions="Center"
+                                       Padding="0,0,10,0"
+                                       Spacing="2">
+                </VerticalStackLayout>
+                
                 <Image Grid.Column="1"
                        Source="cart.png"
                        WidthRequest="26"
                        HeightRequest="26">
-                
-                    
+
+
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnCartTapped"/>
                     </Image.GestureRecognizers>

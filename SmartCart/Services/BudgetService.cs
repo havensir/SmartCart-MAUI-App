@@ -17,6 +17,7 @@ namespace SmartCart.Services
         public bool IsNearBudget(decimal budgetLimit, decimal currentTotal)
         {
             return budgetLimit > 0 && currentTotal >= budgetLimit * 0.9m;
+
         }
 
         public Color GetBudgetStatusColor(decimal budgetLimit, decimal remaining)

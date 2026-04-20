@@ -18,6 +18,22 @@ public partial class AddItemPage : ContentPage
             await DisplayAlert("Error", "Please enter item name and price.", "Okay");
             return;
         }
+        string category = CategoryPicker.SelectedItem?.ToString();
+
+        if (string.IsNullOrEmpty(category))
+        {
+            await DisplayAlert("Error", "Select a category", "OK");
+            return;
+        }
+
+        await DisplayAlert(
+            "Item Added",
+            $"{NameEntry.Text} added under {category}",
+            "OK");
+
+        await Shell.Current.GoToAsync("..");
+        // TODO (Xander - Logic): Validate inputs (no empty name, valid price, no negatives)
+
 
         // TODO (Christopher - Backend): Save new item to SQLite database
 
