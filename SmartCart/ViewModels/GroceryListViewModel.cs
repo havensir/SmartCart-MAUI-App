@@ -37,6 +37,22 @@ namespace SmartCart.ViewModels
         {
             _databaseService = databaseService;
             _budgetViewModel = budgetViewModel;
+
+            MessagingCenter.Subscribe<BudgetViewModel>(this, "BudgetUpdated", async (sender) =>
+            {
+                _budgetViewModel.CurrentListId = ListId;
+
+                await _budgetViewModel.LoadBudgetAsync();
+                _budgetViewModel.UpdateBudgetStatus(Total);
+
+                OnPropertyChanged(nameof(BudgetName));
+                OnPropertyChanged(nameof(HasBudget));
+                OnPropertyChanged(nameof(NoBudget));
+                OnPropertyChanged(nameof(BudgetSummaryText));
+                OnPropertyChanged(nameof(BudgetProgress));
+                OnPropertyChanged(nameof(RemainingBudgetText));
+                OnPropertyChanged(nameof(ProgressBarColor));
+            });
         }
 
         //
@@ -233,14 +249,10 @@ namespace SmartCart.ViewModels
             }
         }
 
-<<<<<<< integration-isabella
+
 
         // LOAD ITEMS
         public async Task LoadItemsAsync()
-=======
-        public GroceryListViewModel();
-        private GroceryListViewModel(SmartCartDatabase database)
->>>>>>> dev
         {
             UserItems.Clear();
 
@@ -265,20 +277,12 @@ namespace SmartCart.ViewModels
                 : _allItems.Where(i =>
     i.Category.Equals(SelectedDepartment, StringComparison.OrdinalIgnoreCase));
 
-<<<<<<< integration-isabella
             Items.Clear();
-=======
-            var Items = await _database.GetItemsAsync(ListId);
->>>>>>> dev
 
             foreach (var item in filtered)
                 Items.Add(item);
 
-<<<<<<< integration-isabella
             OnPropertyChanged(nameof(Items));
-=======
-            UpdateTotals(Items.ToList());
->>>>>>> dev
         }
 
 
@@ -319,7 +323,6 @@ namespace SmartCart.ViewModels
         public void UpdateTotals(List<GroceryItem> items)
         {
             if (items == null)
-<<<<<<< integration-isabella
                 items = new List<GroceryItem>();
 
             var totals = CalculateStoreTotals();
@@ -339,14 +342,6 @@ namespace SmartCart.ViewModels
             OnPropertyChanged(nameof(BudgetProgress));
             OnPropertyChanged(nameof(RemainingBudgetText));
             OnPropertyChanged(nameof(ProgressBarColor));
-=======
-            {
-                items = new List<GroceryItem>();
-            }
-
-            Total = _service.CalculateTotal(items);
-            OnPropertyChanged(nameof(Total));
->>>>>>> dev
         }
 
         public decimal Total
@@ -375,6 +370,7 @@ namespace SmartCart.ViewModels
             _budgetViewModel.CurrentListId = ListId;
 
             await _budgetViewModel.LoadBudgetAsync();
+            _budgetViewModel.UpdateBudgetStatus(Total);
 
             OnPropertyChanged(nameof(BudgetName));
             OnPropertyChanged(nameof(HasBudget));
