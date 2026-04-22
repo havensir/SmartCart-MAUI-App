@@ -24,7 +24,7 @@
                 return Colors.Red;
 
             if (remaining <= budgetLimit * 0.1m)
-                return Colors.Yellow;
+                return Colors.Orange;
 
             return Colors.Green;
         }
