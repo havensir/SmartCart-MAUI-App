@@ -179,8 +179,6 @@ namespace SmartCart.ViewModels
 
 
         // DEPARTMENTS
-
-
         public List<string> Departments { get; } = new()
     {
         "All","Dairy","Produce","Bakery","Meat","Frozen","Pantry","Beverages"
@@ -203,7 +201,6 @@ namespace SmartCart.ViewModels
 
         public void LoadDefaultItems()
         {
-
             _allItems.Clear();
 
             var uniqueItems = PriceData
@@ -212,19 +209,21 @@ namespace SmartCart.ViewModels
 
             foreach (var price in uniqueItems)
             {
+                var existing = UserItems.FirstOrDefault(x =>
+                    x.Name.Trim().ToLower() == price.Item.Trim().ToLower());
+
                 _allItems.Add(new GroceryItem
                 {
                     Name = price.Item,
                     Category = price.Category,
-                    Quantity = 1
+
+                    Quantity = existing?.Quantity ?? 0
                 });
             }
         }
 
 
         // LOAD ITEMS
-
-
         public async Task LoadItemsAsync()
         {
             UserItems.Clear();
@@ -260,8 +259,6 @@ namespace SmartCart.ViewModels
 
 
         // ADD / DELETE
-
-
         public async Task AddItemsAsync(GroceryItem item)
         {
             if (item.ListId == 0)
@@ -269,7 +266,6 @@ namespace SmartCart.ViewModels
 
             await _databaseService.SaveItemAsync(item);
 
-            // 🔥 reload items from DB
             var savedItems = await _databaseService.GetItemsAsync(item.ListId);
 
             UserItems.Clear();
@@ -327,6 +323,5 @@ namespace SmartCart.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
     }
 }

@@ -242,8 +242,8 @@ namespace SmartCart.ViewModels
                 BudgetAmount = 0;
                 RemainingBudget = 0;
                 BudgetTitle = string.Empty;
-                BudgetSummaryText = string.Empty;
-                RemainingBudgetText = string.Empty;
+                BudgetSummaryText = "$0.00 spent of $0.00";
+                RemainingBudgetText = "$0.00 Remaining";
                 BudgetProgress = 0;
                 return;
             }
@@ -251,16 +251,15 @@ namespace SmartCart.ViewModels
             BudgetAmount = budget.Amount;
             BudgetTitle = budget.BudgetName;
 
-            // Home page should only display saved budget info.
-            // Live running totals should come from BudgetViewModel to avoid conflicts.
-            BudgetSummaryText = string.Empty;
-            RemainingBudgetText = string.Empty;
-            BudgetProgress = 0;
-            BudgetAmount = budget.Amount;
-            BudgetTitle = budget.BudgetName;
-            BudgetSummaryText = string.Empty;
-            RemainingBudgetText = string.Empty;
-            BudgetProgress = 0;
+            decimal spent = budget.Amount - budget.Remaining;
+            decimal remaining = budget.Remaining;
+
+            BudgetSummaryText = $"${spent:F2} of ${budget.Amount:F2}";
+            RemainingBudgetText = $"Remaining: ${remaining:F2}";
+
+            BudgetProgress = budget.Amount == 0
+                ? 0
+                : (double)(spent / budget.Amount);
         }
     }
 }

@@ -26,22 +26,32 @@ public partial class HomePage : ContentPage
         BindingContext = _viewModel = viewModel;
         _isLoggedIn = Preferences.Default.Get(LoggedInKey, false);
     }
+    //protected override async void OnAppearing()
+    //    {
+    //        base.OnAppearing();
+
+    //        await _viewModel.LoadListsAsync();
+    //        await _viewModel.LoadBudgetAsync();
+
+    //        await DisplayAlert("Debug", $"Budget: {_viewModel.BudgetAmount}", "OK");
+
+    //        var list = _viewModel.GroceryList
+    //            .OrderByDescending(l => l.ListId)
+    //            .FirstOrDefault();
+
+    //        if (list != null)
+    //        {
+    //        }
+    //    }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
         await _viewModel.LoadListsAsync();
-
-        var list = _viewModel.GroceryList
-            .OrderByDescending(l => l.ListId)
-            .FirstOrDefault();
-
-        if (list != null)
-        {
-        }
+        await _viewModel.LoadBudgetAsync();
     }
-   
+
 
     // STORE TAP
     private async void OnStoreTapped(object sender, TappedEventArgs e)
@@ -204,11 +214,14 @@ public partial class HomePage : ContentPage
     // NAVIGATION
     //private async void OnViewGroceryListsClicked(object sender, EventArgs e)
     //{
+    //    if (!_viewModel.GroceryList.Any())
+    //        await _viewModel.LoadListsAsync();
+
     //    var selectedList = _viewModel.GroceryList.FirstOrDefault();
 
     //    if (selectedList == null)
     //    {
-    //        await DisplayAlert("No List", "No grocery list found. Please create one first.", "OK");
+    //        await DisplayAlert("Error", "No grocery list found.", "OK");
     //        return;
     //    }
 
@@ -222,17 +235,19 @@ public partial class HomePage : ContentPage
 
     //private async void OnCreateBudgetClicked(object sender, EventArgs e)
     //{
+    //    if (!_viewModel.GroceryList.Any())
+    //        await _viewModel.LoadListsAsync();
+
     //    var selectedList = _viewModel.GroceryList.FirstOrDefault();
 
     //    if (selectedList == null)
     //    {
-    //        await DisplayAlert("Error", "You need a grocery list before creating a budget.", "OK");
+    //        await DisplayAlert("Error", "No grocery list found.", "OK");
     //        return;
     //    }
 
     //    await Shell.Current.GoToAsync($"{nameof(BudgetPage)}?listId={selectedList.ListId}");
     //}
-
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(BudgetPage));

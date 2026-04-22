@@ -38,6 +38,8 @@ public partial class AddItemPage : ContentPage
 
         await _viewModel.LoadPriceDataAsync();
 
+        await _viewModel.LoadItemsAsync();
+
         if (_currentListId == 0)
         {
             var lists = await _viewModel.GetListsAsync();
@@ -87,7 +89,8 @@ public partial class AddItemPage : ContentPage
             return;
 
         _viewModel.SelectedDepartment = selected;
-        ((CollectionView)sender).SelectedItem = null;
+
+        _viewModel.FilterItems();
     }
 
     // ADD ITEM
@@ -96,23 +99,31 @@ public partial class AddItemPage : ContentPage
         var item = (sender as Button)?.BindingContext as GroceryItem;
         if (item == null) return;
 
-        var newItem = new GroceryItem
-        {
-            Name = item.Name,
-            Category = item.Category,
-            Quantity = 1,
-            ListId = _currentListId
-        };
+        if (item.ListId == 0)
+            item.ListId = _currentListId;
 
-        await _viewModel.AddItemsAsync(newItem);
-        await _viewModel.LoadItemsAsync();
+        item.Quantity++;
 
-        await Shell.Current.GoToAsync("..");
+        await _viewModel.SaveItemAsync(item);
     }
 
-    // CART TAPPED
-    private void OnCartTapped(object sender, EventArgs e)
+    private async void OnDecreaseItem(object sender, EventArgs e)
     {
-        // TODO: Add your logic here for when the cart image is tapped
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null) return;
+
+        if (item.Quantity == 0)
+            return;
+
+        item.Quantity--;
+
+        if (item.Quantity == 0)
+        {
+            await _viewModel.DeleteItemsAsync(item);
+        }
+        else
+        {
+            await _viewModel.SaveItemAsync(item);
+        }
     }
 }

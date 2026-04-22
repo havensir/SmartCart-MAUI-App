@@ -12,12 +12,12 @@
         <!-- HEADER -->
         <VerticalStackLayout Grid.Row="0" Spacing="4">
             <Label Text="Add Items"
-                   Style="{StaticResource PageTitle}"/>
+                   Style="{StaticResource PageTitle}" />
 
             <Label Text="Browse and add items to your list"
                    FontSize="14"
                    FontAttributes="Italic"
-                   TextColor="#777"/>
+                   TextColor="#777" />
         </VerticalStackLayout>
 
         <!-- SEARCH -->
@@ -26,132 +26,135 @@
                 Padding="14">
 
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-
                 <Image Source="search.png"
                        HeightRequest="20"
-                       Opacity="0.6"/>
+                       Opacity="0.6" />
 
                 <Entry Grid.Column="1"
                        Placeholder="Search groceries..."
                        BackgroundColor="Transparent"
-                       TextChanged="OnSearchTextChanged"/>
+                       TextChanged="OnSearchTextChanged" />
             </Grid>
         </Border>
 
         <!-- DEPARTMENTS -->
         <VerticalStackLayout Grid.Row="2" Spacing="8">
-
             <Label Text="Shop by Department"
-                   FontSize="18"
-                   FontAttributes="Bold"/>
+           FontSize="18"
+           FontAttributes="Bold" />
 
             <CollectionView ItemsSource="{Binding Departments}"
-                            SelectionMode="Single"
-                            SelectionChanged="OnDepartmentSelected"
-                            HeightRequest="125">
+                    SelectionMode="Single"
+                    SelectionChanged="OnDepartmentSelected"
+                    HeightRequest="120">
 
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="3"/>
+                    <GridItemsLayout Orientation="Vertical" Span="3" />
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="6"
-                               Margin="5"
-                               CornerRadius="16"
-                               HasShadow="False"
-                               BackgroundColor="White"
-                               BorderColor="{StaticResource PrimaryColor}">
 
-                            <VerticalStackLayout Spacing="2"
-                                                 HorizontalOptions="Center">
-            <Picker x:Name="CategoryPicker"
-                    Title="Category">
-                <Picker.Items>
-                    <x:String>Dairy</x:String>
-                    <x:String>Produce</x:String>
-                    <x:String>Bakery</x:String>
-                    <x:String>Meat</x:String>
-                    <x:String>Frozen</x:String>
-                    <x:String>Pantry</x:String>
-                    <x:String>Beverages</x:String>
-                </Picker.Items>
-            </Picker>
+                        <Border x:Name="DepartmentBorder"
+                        Stroke="{StaticResource PrimaryColor}"
+                        StrokeThickness="1"
+                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 16"
+                        Margin="5"
+                        Padding="14">
 
-                                <Label Text="🛒"
-                                       FontSize="16"/>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
 
-                                <Label Text="{Binding}"
-                                       FontAttributes="Bold"
-                                       FontSize="12"/>
-                            </VerticalStackLayout>
-                        </Frame>
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="White" />
+                                            <Setter Property="Stroke" Value="{StaticResource PrimaryColor}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E8F0FE" />
+                                            <Setter Property="Stroke" Value="#1D4ED8" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Label Text="{Binding}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
+                        </Border>
+
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-
             </CollectionView>
         </VerticalStackLayout>
 
-        <!-- ITEMS + TOTAL -->
+        <!-- ITEMS -->
         <Grid Grid.Row="3"
-              RowDefinitions="Auto,*"
-              RowSpacing="10">
+      RowDefinitions="Auto,*"
+      RowSpacing="10">
 
-           
-            <!-- TOTAL -->
-            <!-- <Border Style="{StaticResource CardStyle}"
-                    Padding="14"
-                    BackgroundColor="{StaticResource PrimaryColor}">
-
-                <Grid ColumnDefinitions="*,Auto">
-
-                    <Label Text="Running Total"
-                           TextColor="White"
-                           FontAttributes="Bold"/>
-
-                    <Label Grid.Column="1"
-                           Text="{Binding Total, StringFormat='{}{0:C}'}"
-                           TextColor="White"
-                           FontAttributes="Bold"/>
-                </Grid>
-            </Border> -->
-
-            <!-- ITEMS -->
             <CollectionView Grid.Row="1"
-                            ItemsSource="{Binding Items}"
-                            SelectionMode="None">
+                    ItemsSource="{Binding Items}"
+                    SelectionMode="None">
+                
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource CardStyle}"
-                                Padding="16"
-                                Margin="0,0,0,12">
+                        Padding="16"
+                        Margin="10,0,10,10">
 
-                            <Grid ColumnDefinitions="*,Auto"
-                                  RowDefinitions="Auto,Auto">
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto"
+      VerticalOptions="Center">
 
                                 <!-- NAME -->
                                 <Label Text="{Binding Name}"
-                                       FontAttributes="Bold"
-                                       FontSize="17"/>
+           FontAttributes="Bold"
+           FontSize="17"
+           VerticalOptions="Center" />
 
-                                <!-- ADD BUTTON -->
+                                <!-- MINUS BUTTON -->
                                 <Button Grid.Column="1"
-                                        Text="+"
-                                        WidthRequest="38"
-                                        HeightRequest="38"
-                                        CornerRadius="19"
-                                        BackgroundColor="{StaticResource PrimaryColor}"
-                                        TextColor="White"
-                                        Clicked="OnQuickAddItem"/>
+            Text="-"
+            WidthRequest="36"
+            HeightRequest="36"
+            CornerRadius="18"
+            BackgroundColor="#E5E7EB"
+            TextColor="Black"
+            Clicked="OnDecreaseItem"/>
+
+                                <!-- QUANTITY -->
+                                <Label Grid.Column="2"
+           Text="{Binding Quantity}"
+           FontSize="16"
+           VerticalOptions="Center"
+           HorizontalOptions="Center"
+           Margin="8,0"/>
+
+                                <!-- PLUS BUTTON -->
+                                <Button Grid.Column="3"
+            Text="+"
+            WidthRequest="36"
+            HeightRequest="36"
+            CornerRadius="18"
+            BackgroundColor="{StaticResource PrimaryColor}"
+            TextColor="White"
+            Clicked="OnQuickAddItem"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-
             </CollectionView>
-
         </Grid>
-
     </Grid>
 </ContentPage>

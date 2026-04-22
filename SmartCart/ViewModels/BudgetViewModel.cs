@@ -215,16 +215,12 @@ namespace SmartCart.ViewModels
 
             OnPropertyChanged(nameof(HasBudget));
 
-            bool goBack = await Shell.Current.DisplayAlert(
+            await Shell.Current.DisplayAlert(
                 "Saved",
                 $"Budget '{BudgetName}' saved successfully!\n\nAmount: ${amount:F2}\n\nPeriod: {BudgetPeriod}",
-                "Back to Home",
-                "Stay on Budget");
+                "OK");
 
-            if (goBack)
-            {
-                await Shell.Current.GoToAsync("..");
-            }
+            await Shell.Current.GoToAsync("..");
         }
 
         private async Task OnDeleteBudget()

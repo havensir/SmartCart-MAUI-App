@@ -39,12 +39,9 @@ public partial class GroceryListPage : ContentPage
         }
 
         await _viewModel.LoadItemsAsync();
-
-        _viewModel.UpdateTotals(_viewModel.UserItems.ToList());
-        _viewModel.UpdateStoreComparison();
     }
 
-    // INCREASE
+    // 🔼 INCREASE
     private async void OnRaiseQuantityNumber(object sender, EventArgs e)
     {
         var item = (sender as Button)?.BindingContext as GroceryItem;
@@ -52,13 +49,12 @@ public partial class GroceryListPage : ContentPage
 
         item.Quantity++;
 
-        await _viewModel.SaveItemAsync(item); // 🔥 persist change
+        await _viewModel.SaveItemAsync(item);
 
-        _viewModel.UpdateTotals(_viewModel.UserItems.ToList());
-        _viewModel.UpdateStoreComparison();
+        RefreshTotals();
     }
 
-    // DECREASE
+    // 🔽 DECREASE
     private async void OnLowerQuantityNumber(object sender, EventArgs e)
     {
         var item = (sender as Button)?.BindingContext as GroceryItem;
@@ -66,13 +62,29 @@ public partial class GroceryListPage : ContentPage
 
         item.Quantity--;
 
-        await _viewModel.SaveItemAsync(item); // 🔥 persist change
+        if (item.Quantity == 0)
+        {
+            await _viewModel.DeleteItemsAsync(item);
 
+            // 🔥 remove from UI instantly
+            _viewModel.UserItems.Remove(item);
+        }
+        else
+        {
+            await _viewModel.SaveItemAsync(item);
+        }
+
+        RefreshTotals();
+    }
+
+    // 🔄 CENTRALIZED TOTAL UPDATE
+    private void RefreshTotals()
+    {
         _viewModel.UpdateTotals(_viewModel.UserItems.ToList());
         _viewModel.UpdateStoreComparison();
     }
 
-    // NAVIGATE TO ADD ITEMS
+    // ➕ NAVIGATE TO ADD ITEMS
     private async void OnAddItemsClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync($"{nameof(AddItemPage)}?listId={_viewModel.ListId}");
