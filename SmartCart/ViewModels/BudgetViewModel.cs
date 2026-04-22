@@ -7,12 +7,12 @@ using System.Windows.Input;
 
 namespace SmartCart.ViewModels
 {
-    public class BudgetViewModel : INotifyPropertyChanged
+    public class BudgetViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly DatabaseService _databaseService;
         private readonly BudgetService _budgetService;
 
-
+        private bool _isDisposed;
         private decimal _parsedBudgetAmount;
 
         private string _budgetName = string.Empty;
@@ -217,10 +217,10 @@ namespace SmartCart.ViewModels
 
                 await _databaseService.SaveBudgetAsync(budget);
 
-                MessagingCenter.Send(this, "BudgetUpdated");
             }
 
             await LoadBudgetAsync();
+            MessagingCenter.Send(this, "BudgetUpdated");
 
             OnPropertyChanged(nameof(HasBudget));
 
@@ -423,6 +423,16 @@ namespace SmartCart.ViewModels
             }
 
             UpdateBudgetStatus(total);
+        }
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+                return;
+
+            MessagingCenter.Unsubscribe<GroceryListViewModel, decimal>(this, "UpdateBudget");
+
+            _isDisposed = true;
         }
     }
 }

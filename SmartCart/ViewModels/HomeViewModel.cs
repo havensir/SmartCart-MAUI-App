@@ -20,6 +20,11 @@ namespace SmartCart.ViewModels
         {
             _databaseService = databaseService;
             _budgetViewModel = budgetViewModel;
+
+            MessagingCenter.Subscribe<BudgetViewModel>(this, "BudgetUpdated", async (sender) =>
+            {
+                await LoadBudgetAsync();
+            });
         }
 
 
@@ -178,14 +183,48 @@ namespace SmartCart.ViewModels
             BudgetTitle = budget.BudgetName;
             BudgetAmount = budget.Amount;
 
-            decimal spent = budget.Amount - budget.Remaining;
+            // GET ALL LISTS
+            var lists = await _databaseService.GetListsAsync();
 
-            BudgetSummaryText = $"${spent:F2} of ${budget.Amount:F2}";
-            RemainingBudgetText = $"${budget.Remaining:F2} Remaining";
+            var latestList = lists
+                .OrderByDescending(l => l.CreatedDate)
+                .ThenByDescending(l => l.ListId)
+                .FirstOrDefault();
 
-            BudgetProgress = budget.Amount == 0
+            decimal spent = 0;
+
+            if (latestList != null)
+            {
+                var items = await _databaseService.GetItemsAsync(latestList.ListId);
+
+                foreach (var item in items)
+                {
+                    var priceData = PriceData.FirstOrDefault(p =>
+                        p.Item.Trim().ToLower() == item.Name.Trim().ToLower());
+
+                    if (priceData == null)
+                        continue;
+
+                    var cheapest = new List<decimal>
+            {
+                priceData.Walmart,
+                priceData.Kroger,
+                priceData.Target,
+                priceData.Aldi
+            }.Min();
+
+                    spent += cheapest * item.Quantity;
+                }
+            }
+
+            decimal remaining = budget.Amount - spent;
+
+            BudgetSummaryText = $"${spent:F2} spent of ${budget.Amount:F2}";
+            RemainingBudgetText = $"${remaining:F2} Remaining";
+
+            BudgetProgress = budget.Amount <= 0
                 ? 0
-                : (double)(spent / budget.Amount);
+                : Math.Max(0, Math.Min(1, (double)(spent / budget.Amount)));
 
             OnPropertyChanged(nameof(BudgetAmount));
             OnPropertyChanged(nameof(BudgetSummaryText));

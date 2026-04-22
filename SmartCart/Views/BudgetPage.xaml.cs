@@ -47,4 +47,11 @@ public partial class BudgetPage : ContentPage
         await _viewModel.LoadBudgetAsync();
         await _viewModel.RefreshBudgetFromDatabase();
     }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        _viewModel.Dispose();
+    }
 }
