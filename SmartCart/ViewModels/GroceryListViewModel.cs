@@ -43,7 +43,7 @@ namespace SmartCart.ViewModels
             }
         }
 
-        public GroceryListViewModel()
+        public GroceryListViewModel();
         private GroceryListViewModel(SmartCartDatabase database)
         {
             // TODO (Christopher - Backend): Replace hardcoded data with SQLite-loaded data
@@ -61,12 +61,11 @@ namespace SmartCart.ViewModels
         
             if (ListId == 0) return;
 
-            Items = await _database.GetItemsAsync(ListId);
+            var Items = await _database.GetItemsAsync(ListId);
 
             OnPropertyChanged(nameof(Items));
 
             UpdateTotals(Items.ToList());
-            // TODO (Xander - Logic): Connect budget calculations here
         }
 
         public async Task AddItemsAsync(GroceryItem item) 
@@ -89,10 +88,13 @@ namespace SmartCart.ViewModels
 
         public void UpdateTotals(List<GroceryItem> items)
         {
-            // TODO (Xander - Logic): Add item count tracking
-            // TODO (Xander - Logic): Trigger budget warnings (near/over)
+            if (items == null)
+            {
+                items = new List<GroceryItem>();
+            }
 
             Total = _service.CalculateTotal(items);
+            OnPropertyChanged(nameof(Total));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
