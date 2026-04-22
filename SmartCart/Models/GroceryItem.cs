@@ -32,7 +32,6 @@ namespace SmartCart.Models
 
         public int ListId { get; set; }
 
-        // ?? THIS IS WHAT FIXES YOUR UI
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
