@@ -1,62 +1,128 @@
+using SmartCart.Models;
+using SmartCart.ViewModels;
+
 namespace SmartCart.Views;
 
+[QueryProperty(nameof(ListId), "listId")]
 public partial class AddItemPage : ContentPage
 {
-   
-    public AddItemPage()
-	{
-		InitializeComponent();
-	}
+    private readonly GroceryListViewModel _viewModel;
+    private int _currentListId;
 
-    private async void OnAddItemClicked(object sender, EventArgs e)
+    public AddItemPage(GroceryListViewModel groceryListViewModel)
     {
-        // TODO (Xander - Logic): Validate inputs (no empty name, valid price, no negatives)
-
-        if (string.IsNullOrWhiteSpace(NameEntry.Text) ||
-            string.IsNullOrWhiteSpace(DescriptionEntry.Text))
-        {
-            await DisplayAlert("Error", "Please enter item name and price.", "Okay");
-            return;
-        }
-        string category = CategoryPicker.SelectedItem?.ToString();
-
-        if (string.IsNullOrEmpty(category))
-        {
-            await DisplayAlert("Error", "Select a category", "OK");
-            return;
-        }
-
-        await DisplayAlert(
-            "Item Added",
-            $"{NameEntry.Text} added under {category}",
-            "OK");
-
-        await Shell.Current.GoToAsync("..");
-        // TODO (Xander - Logic): Validate inputs (no empty name, valid price, no negatives)
-
-
-        // TODO (Christopher - Backend): Save new item to SQLite database
-
-        // TODO (Xander - Logic): Create GroceryItem object and apply default quantity
-
-        // TODO (Isabella - Integration): Pass new item back to GroceryListViewModel
-        // TODO (Isabella - Navigation): Navigate back to GroceryListPage after adding item
-    }
-    private async void OnCartTapped(object sender, EventArgs e)
-    {
-
+        InitializeComponent();
+        _viewModel = groceryListViewModel;
+        BindingContext = _viewModel;
     }
 
-    private async void OnDeleteItemClicked(object sender, EventArgs e)
-	{
-		// TODO (Melissa - UI/UX): Add confirmation alert before deleting item
-		bool confirm = await DisplayAlert(
-			"Delete Item",
-			"Are you sure you want to delete this item?",
-			"Yes",
-			"No");
-		if (!confirm)
-			return;
+    public string ListId
+    {
+        set
+        {
+            if (int.TryParse(value, out int id) && id > 0)
+            {
+                _currentListId = id;
+                _viewModel.ListId = id;
 
+                System.Diagnostics.Debug.WriteLine($"?? AddItemPage received ListId: {id}");
+            }
+        }
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        await _viewModel.LoadPriceDataAsync();
+
+        await _viewModel.LoadItemsAsync();
+
+        if (_currentListId == 0)
+        {
+            var lists = await _viewModel.GetListsAsync();
+
+            if (lists.Any())
+            {
+                _currentListId = lists.First().ListId;
+                _viewModel.ListId = _currentListId;
+            }
+        }
+
+        _viewModel.LoadDefaultItems();
+        _viewModel.SelectedDepartment = "All";
+        _viewModel.FilterItems();
+    }
+
+    // SEARCH
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        string searchText = e.NewTextValue?.Trim().ToLower();
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            _viewModel.FilterItems();
+            return;
+        }
+
+        var filtered = _viewModel.Items
+            .Where(x => x.Name.ToLower().Contains(searchText))
+            .ToList();
+
+        _viewModel.Items.Clear();
+
+        foreach (var item in filtered)
+            _viewModel.Items.Add(item);
+    }
+
+    // FILTER
+    private void OnDepartmentSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
+            return;
+
+        var selected = e.CurrentSelection[0] as string;
+
+        if (string.IsNullOrEmpty(selected))
+            return;
+
+        _viewModel.SelectedDepartment = selected;
+
+        _viewModel.FilterItems();
+    }
+
+    // ADD ITEM
+    private async void OnQuickAddItem(object sender, EventArgs e)
+    {
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null) return;
+
+        if (item.ListId == 0)
+            item.ListId = _currentListId;
+
+        item.Quantity++;
+
+        await _viewModel.SaveItemAsync(item);
+        await _viewModel.LoadItemsAsync();
+    }
+
+    private async void OnDecreaseItem(object sender, EventArgs e)
+    {
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null) return;
+
+        if (item.Quantity == 0)
+            return;
+
+        item.Quantity--;
+
+        if (item.Quantity == 0)
+        {
+            await _viewModel.DeleteItemsAsync(item);
+        }
+        else
+        {
+            await _viewModel.SaveItemAsync(item);
+        }
     }
 }

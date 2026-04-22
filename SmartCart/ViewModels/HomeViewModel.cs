@@ -1,148 +1,205 @@
 ﻿using SmartCart.Database;
 using SmartCart.Models;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace SmartCart.ViewModels
 {
     public class HomeViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService _databaseService;
+        private readonly BudgetViewModel _budgetViewModel;
 
-        // Constructor
-        public HomeViewModel(DatabaseService databaseService)
+        public ObservableCollection<StoreInfo> Stores { get; set; } = new();
+        public ObservableCollection<GroceryList> GroceryList { get; set; } = new();
+
+        public List<StorePrice> PriceData { get; set; } = new();
+
+        public HomeViewModel(DatabaseService databaseService, BudgetViewModel budgetViewModel)
         {
             _databaseService = databaseService;
-            GroceryList = new ObservableCollection<GroceryList>();
+            _budgetViewModel = budgetViewModel;
         }
 
-        // INotifyPropertyChanged Implementation
-        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        // INITIAL LOAD
+
+        public async Task InitializeAsync()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            await LoadPriceDataAsync();
+            await LoadListsAsync();
+            LoadStores();
+            await LoadBudgetAsync();
         }
 
-        // Grocery Lists
-        public ObservableCollection<GroceryList> GroceryList { get; set; }
 
-        // Budget Fields
-        private decimal _budgetAmount;
-        private decimal _remainingBudget;
-        private double _budgetProgress;
-        private string _budgetSummaryText = string.Empty;
-        private string _remainingBudgetText = string.Empty;
-        private string _budgetName = string.Empty;
+        // PRICE DATA
 
-        // Budget Properties
-        public decimal BudgetAmount
+        public async Task LoadPriceDataAsync()
         {
-            get => _budgetAmount;
-            set
+            if (PriceData.Count > 0) return;
+
+            using var stream = await FileSystem.OpenAppPackageFileAsync("SmartCart_AveragesPerStore_4.20.26.csv");
+            using var reader = new StreamReader(stream);
+
+            bool isFirstLine = true;
+
+            while (!reader.EndOfStream)
             {
-                _budgetAmount = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(HasBudget));
-                OnPropertyChanged(nameof(NeedsBudget));
+                var line = await reader.ReadLineAsync();
+
+                if (isFirstLine)
+                {
+                    isFirstLine = false;
+                    continue;
+                }
+
+                var values = line.Split(',');
+
+                if (values.Length < 7) continue;
+
+                PriceData.Add(new StorePrice
+                {
+                    Category = values[0].Trim(),
+                    Item = values[1].Trim(),
+                    Size = values[2].Trim(),
+                    Walmart = decimal.Parse(values[3]),
+                    Kroger = decimal.Parse(values[4]),
+                    Target = decimal.Parse(values[5]),
+                    Aldi = decimal.Parse(values[6])
+                });
             }
         }
 
-        public bool HasBudget => BudgetAmount > 0;
-        public bool NeedsBudget => !HasBudget;
 
-        public decimal RemainingBudget
+        // STORES
+
+        public void LoadStores()
         {
-            get => _remainingBudget;
-            set
+            Stores.Clear();
+
+            decimal Avg(IEnumerable<decimal> list) => list.Any() ? list.Average() : 0;
+
+            var storeList = new List<StoreInfo>
             {
-                _remainingBudget = value;
-                OnPropertyChanged();
+                new StoreInfo { Name = "Walmart", Image = "walmart.png", Url = "https://www.walmart.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Walmart)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Walmart)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Walmart))
+                },
+                new StoreInfo { Name = "Kroger", Image = "kroger.png", Url = "https://www.kroger.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Kroger)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Kroger)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Kroger))
+                },
+                new StoreInfo { Name = "Aldi", Image = "aldi.png", Url = "https://www.aldi.us",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Aldi)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Aldi)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Aldi))
+                },
+                new StoreInfo { Name = "Target", Image = "target.png", Url = "https://www.target.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Target)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Target)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Target))
+                }
+            };
+
+            var cheapest = storeList.OrderBy(s => s.TotalAverage).FirstOrDefault();
+
+            foreach (var store in storeList)
+            {
+                if (cheapest != null && store.Name == cheapest.Name)
+                    store.Name += " ⭐";
+
+                Stores.Add(store);
             }
+
+            OnPropertyChanged(nameof(Stores));
         }
 
-        public double BudgetProgress
-        {
-            get => _budgetProgress;
-            set
-            {
-                _budgetProgress = value;
-                OnPropertyChanged();
-            }
-        }
 
-        public string BudgetSummaryText
-        {
-            get => _budgetSummaryText;
-            set
-            {
-                _budgetSummaryText = value;
-                OnPropertyChanged();
-            }
-        }
+        // LISTS
 
-        public string RemainingBudgetText
-        {
-            get => _remainingBudgetText;
-            set
-            {
-                _remainingBudgetText = value;
-                OnPropertyChanged();
-            }
-        }
-
-        // Load Grocery Lists
         public async Task LoadListsAsync()
         {
             var lists = await _databaseService.GetListsAsync();
 
             GroceryList.Clear();
+
             foreach (var list in lists
-                .OrderByDescending(l => l.CreatedDate)
-                .ThenByDescending(l => l.ListId))
+                         .OrderByDescending(l => l.CreatedDate)
+                         .ThenByDescending(l => l.ListId))
             {
                 GroceryList.Add(list);
             }
         }
 
-        // Load Budget and Calculate Remaining Amount
-        public async Task LoadBudgetAsync(int currentListId)
+
+        // BUDGET (FIXED)
+
+        private decimal _budgetAmount;
+        private double _budgetProgress;
+        private string _budgetSummaryText = "";
+        private string _remainingBudgetText = "";
+        private string _budgetTitle = "";
+
+        public decimal BudgetAmount { get => _budgetAmount; set { _budgetAmount = value; OnPropertyChanged(); } }
+        public double BudgetProgress { get => _budgetProgress; set { _budgetProgress = value; OnPropertyChanged(); } }
+        public string BudgetSummaryText { get => _budgetSummaryText; set { _budgetSummaryText = value; OnPropertyChanged(); } }
+        public string RemainingBudgetText { get => _remainingBudgetText; set { _remainingBudgetText = value; OnPropertyChanged(); } }
+        public string BudgetTitle { get => _budgetTitle; set { _budgetTitle = value; OnPropertyChanged(); } }
+
+        public bool HasBudget => BudgetAmount > 0;
+        public bool NeedsBudget => !HasBudget;
+
+        public async Task LoadBudgetAsync()
         {
-            var budgets = await _databaseService.GetBudgetsAsync();
-            var budget = budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
+            var budget = await _databaseService.GetCurrentBudgetAsync();
 
             if (budget == null)
             {
                 BudgetAmount = 0;
-                RemainingBudget = 0;
-                BudgetSummaryText = string.Empty;
-                RemainingBudgetText = string.Empty;
+                BudgetTitle = "";
+                BudgetSummaryText = "$0.00 spent of $0.00";
+                RemainingBudgetText = "$0.00 Remaining";
                 BudgetProgress = 0;
+
+                OnPropertyChanged(nameof(BudgetAmount));
+                OnPropertyChanged(nameof(BudgetSummaryText));
+                OnPropertyChanged(nameof(RemainingBudgetText));
+                OnPropertyChanged(nameof(BudgetProgress));
+                OnPropertyChanged(nameof(HasBudget));
+                OnPropertyChanged(nameof(NeedsBudget));
+
                 return;
             }
 
-            BudgetAmount = (decimal)budget.Amount;
-            decimal spent = await GetListTotalAsync(currentListId);
+            BudgetTitle = budget.BudgetName;
+            BudgetAmount = budget.Amount;
 
-            RemainingBudget = BudgetAmount - spent;
-            BudgetSummaryText = $"{spent:C} spent of {BudgetAmount:C}";
-            RemainingBudgetText = $"{RemainingBudget:C} Remaining";
-            var rawProgress = BudgetAmount > 0
-                ? (double)(spent / BudgetAmount)
-                : 0;
+            decimal spent = budget.Amount - budget.Remaining;
 
-            BudgetProgress = Math.Max(0, Math.Min(1, rawProgress));
+            BudgetSummaryText = $"${spent:F2} of ${budget.Amount:F2}";
+            RemainingBudgetText = $"${budget.Remaining:F2} Remaining";
+
+            BudgetProgress = budget.Amount == 0
+                ? 0
+                : (double)(spent / budget.Amount);
+
+            OnPropertyChanged(nameof(BudgetAmount));
+            OnPropertyChanged(nameof(BudgetSummaryText));
+            OnPropertyChanged(nameof(RemainingBudgetText));
+            OnPropertyChanged(nameof(BudgetProgress));
+            OnPropertyChanged(nameof(HasBudget));
+            OnPropertyChanged(nameof(NeedsBudget));
         }
 
-        // Helper Method to Calculate List Total
-        private async Task<decimal> GetListTotalAsync(int listId)
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = "")
         {
-            var items = await _databaseService.GetItemsAsync(listId);
-            return items.Sum(i => i.Price * i.Quantity);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -6,261 +6,249 @@
              BackgroundColor="#F7F9FC">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="0,10">
 
-            <!-- HEADER -->
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto"
-                  Padding="0,12,0,20">
+                <VerticalStackLayout Padding="5" Spacing="10">
 
-                <!-- Title -->
-                <Label Grid.Column="0"
-                       Text="{Binding WelcomeText}"
-                       FontSize="30"
-                       FontAttributes="Bold"
-                       TextColor="#1E293B"
-                       VerticalOptions="Center"/>
+                    <!-- HEADER -->
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto"
+      Padding="0,12,0,20">
 
-                <!-- Profile -->
-                <Border Grid.Column="1"
-                        BackgroundColor="White"
-                        Stroke="#DCE3EB"
-                        StrokeShape="RoundRectangle 18"
-                        Padding="12"
-                        Margin="8,0">
+                        <!-- Title -->
+                        <Label Grid.Column="0"
+           Text="{Binding WelcomeText}"
+           FontSize="30"
+           FontAttributes="Bold"
+           TextColor="#1E293B"
+           VerticalOptions="Center"/>
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnProfileTapped"/>
-                    </Border.GestureRecognizers>
+                        <!-- Profile -->
+                        <Border Grid.Column="1"
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
 
-                    <Image Source="profile.png"
-                           HeightRequest="24"
-                           WidthRequest="24"/>
-                </Border>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnProfileTapped"/>
+                            </Border.GestureRecognizers>
 
-                <!-- Cart -->
-                <Border Grid.Column="2"
-                        BackgroundColor="White"
-                        Stroke="#DCE3EB"
-                        StrokeShape="RoundRectangle 18"
-                        Padding="12"
-                        Margin="8,0">
+                            <Image Source="profile.png"
+               HeightRequest="24"
+               WidthRequest="24"/>
+                        </Border>
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCartTapped"/>
-                    </Border.GestureRecognizers>
+                        <!-- Share -->
+                        <Border Grid.Column="2"
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
 
-                    <Image Source="cart.png"
-                           HeightRequest="24"
-                           WidthRequest="24"/>
-                </Border>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnShareTapped"/>
+                            </Border.GestureRecognizers>
 
-                <!-- Share -->
-                <Border Grid.Column="3"
-                        BackgroundColor="White"
-                        Stroke="#DCE3EB"
-                        StrokeShape="RoundRectangle 18"
-                        Padding="12"
-                        Margin="8,0">
+                            <Image Source="share.png"
+               HeightRequest="24"
+               WidthRequest="24"/>
+                        </Border>
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnShareTapped"/>
-                    </Border.GestureRecognizers>
+                        <!-- Help -->
+                        <Border Grid.Column="3"
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
 
-                    <Image Source="share.png"
-                           HeightRequest="24"
-                           WidthRequest="24"/>
-                </Border>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnHelpTapped"/>
+                            </Border.GestureRecognizers>
 
-            </Grid>
+                            <Image Source="info.png"
+               HeightRequest="24"
+               WidthRequest="24"/>
+                        </Border>
+
+                    </Grid>
 
 
-            <!-- BUDGET CARD -->
-            <Border BackgroundColor="White"
-                    Stroke="#DCE3EB"
-                    StrokeShape="RoundRectangle 22"
-                    Padding="22">
+                    <!-- BUDGET CARD -->
+                    <Border BackgroundColor="White"
+                Stroke="#DCE3EB"
+                StrokeShape="RoundRectangle 22"
+                Padding="22">
 
-                <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="12">
 
-                    <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Budget Overview"
+                       FontSize="28"
+                       FontAttributes="Bold"/>
 
-                        <Label Text="Budget Overview"
-                               FontSize="28"
-                               FontAttributes="Bold"/>
+                            <!-- HAS BUDGET -->
+                            <VerticalStackLayout IsVisible="{Binding HasBudget}" Spacing="12">
 
-                        <Button Grid.Column="1"
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Current Budget"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#6B7280"
+                               VerticalOptions="Center" />
+
+                                    <Button Grid.Column="1"
                                 Text="Edit"
                                 FontSize="12"
                                 HeightRequest="34"
                                 WidthRequest="72"
-                                Clicked="OnCreateBudgetClicked"/>
+                                CornerRadius="16"
+                                BackgroundColor="#E8F0FE"
+                                TextColor="#1D4ED8"
+
+                                Clicked="OnCreateBudgetClicked" />
+                                </Grid>
+
+                                <Label Text="{Binding BudgetTitle}"
+                           FontSize="30"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="#111827" />
+
+                                <Label Text="{Binding BudgetAmount, StringFormat='{}{0:C}'}"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="#16A34A" />
+
+                            </VerticalStackLayout> 
+
+                            <!-- NO BUDGET -->
+                            <HorizontalStackLayout IsVisible="{Binding NeedsBudget}" Spacing="12">
+
+                                <Label Text="You haven't set up a budget yet."
+                           VerticalOptions="Center"
+                           FontSize="15"
+                           TextColor="Gray"/>
+
+                                <Button Text="Create Budget"
+                            Clicked="OnCreateBudgetClicked"
+                Style="{StaticResource PrimaryButton}"
+                                        HeightRequest="35"
+                                        FontSize="12"
+                            TextColor="White"/>
+                            </HorizontalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- STORES -->
+                    <Label Text="Local Grocery Stores"
+               FontSize="26"
+                           Padding="0,20,0,0"
+               FontAttributes="Bold"/>
+
+                    <CollectionView ItemsSource="{Binding Stores}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+
+                                <Grid Padding="5" ColumnDefinitions="110, *">
+
+                                    <VerticalStackLayout Grid.Column="0"
+                                     HorizontalOptions="Center"
+                                     Spacing="5">
+
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                            Tapped="OnStoreTapped"
+                            CommandParameter="{Binding Name}" />
+                                        </VerticalStackLayout.GestureRecognizers>
+
+                                        <!-- IMAGE -->
+                                        <Border WidthRequest="100"
+                            HeightRequest="100"
+                            StrokeShape="RoundRectangle 35"
+                            Style="{StaticResource CardStyle}">
+                                            <Image Source="{Binding Image}" Aspect="AspectFit"/>
+                                        </Border>
+
+                                        <!-- NAME -->
+                                        <Label Text="{Binding Name}"
+                           FontSize="14"
+                           HorizontalTextAlignment="Center"/>
+                                    </VerticalStackLayout>
+
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+
+                    <!-- GRID OF STORES -->
+                    <Grid ColumnDefinitions="*,*"
+              RowDefinitions="Auto,Auto"
+              ColumnSpacing="16"
+              RowSpacing="16">
+
+                        <!-- Kroger -->
+                        <Border Grid.Row="0" Grid.Column="0" Padding="16" StrokeShape="RoundRectangle 20" BackgroundColor="White" Stroke="#DCE3EB">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Kroger"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Image Source="kroger.png" HeightRequest="56"/>
+                                <Label Text="Kroger" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Walmart -->
+                        <Border Grid.Row="0" Grid.Column="1" Padding="16" StrokeShape="RoundRectangle 20" BackgroundColor="White" Stroke="#DCE3EB">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Walmart"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Image Source="walmart.png" HeightRequest="56"/>
+                                <Label Text="Walmart" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Target -->
+                        <Border Grid.Row="1" Grid.Column="0" Padding="16" StrokeShape="RoundRectangle 20" BackgroundColor="White" Stroke="#DCE3EB">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Target"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Image Source="target.png" HeightRequest="56"/>
+                                <Label Text="Target" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Aldi -->
+                        <Border Grid.Row="1" Grid.Column="1" Padding="16" StrokeShape="RoundRectangle 20" BackgroundColor="White" Stroke="#DCE3EB">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnStoreTapped" CommandParameter="Aldi"/>
+                                </VerticalStackLayout.GestureRecognizers>
+                                <Image Source="aldi.png" HeightRequest="56"/>
+                                <Label Text="Aldi" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
                     </Grid>
 
-                    <VerticalStackLayout IsVisible="{Binding HasBudget}"
-                                         Spacing="8">
-
-                        <Label Text="Current Budget"
-                               FontSize="15"
-                               TextColor="Gray"/>
-
-                        <Label Text="{Binding BudgetAmount, StringFormat='{}{0:C}'}"
-                               FontSize="30"
-                               FontAttributes="Bold"
-                               TextColor="#16A34A"/>
-
-                        <Label Text="{Binding BudgetSummaryText}"
-                               FontSize="14"
-                               TextColor="Gray"/>
-
-                        <Label Text="{Binding RemainingBudgetText}"
-                               FontSize="18"
-                               FontAttributes="Bold"
-                               TextColor="#1D4ED8"/>
-
-                        <ProgressBar Progress="{Binding BudgetProgress}"
-                                     HeightRequest="10"/>
-                    </VerticalStackLayout>
-
-                    <HorizontalStackLayout IsVisible="{Binding NeedsBudget}"
-                                           Spacing="12">
-
-                        <Label Text="You haven't set up a budget yet."
-                               VerticalOptions="Center"
-                               FontSize="15"
-                               TextColor="Gray"/>
-
-                        <Button Text="Create Budget"
-                                Clicked="OnCreateBudgetClicked"
-                                BackgroundColor="#2E7D32"
-                                TextColor="White"/>
-                    </HorizontalStackLayout>
+                    <!-- ACTION BUTTON -->
+                    <Button Text="View Grocery List"
+                HeightRequest="52"
+                FontSize="18"
+                CornerRadius="18"
+                Margin="0,20,0,0"
+                Style="{StaticResource PrimaryButton}"
+                Clicked="OnViewGroceryListsClicked" />
 
                 </VerticalStackLayout>
-
-            </Border>
-
-
-            <!-- STORES -->
-            <Label Text="Well-Known Local Stores"
-                   FontSize="26"
-                   FontAttributes="Bold"/>
-
-          
-            <Grid ColumnDefinitions="*,*"
-                  RowDefinitions="Auto,Auto"
-                  ColumnSpacing="16"
-                  RowSpacing="16">
-
-                <!-- Kroger -->
-                <Border Grid.Row="0"
-                        Grid.Column="0"
-                        Padding="16"
-                        StrokeShape="RoundRectangle 20">
-
-                    <VerticalStackLayout HorizontalOptions="Center">
-
-                        <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnStoreTapped"
-                                CommandParameter="Kroger"/>
-                        </VerticalStackLayout.GestureRecognizers>
-
-                        <Image Source="kroger.png"
-                               HeightRequest="56"/>
-
-                        <Label Text="Kroger"
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center"/>
-
-                    </VerticalStackLayout>
-                </Border>
-
-
-                <!-- Walmart -->
-                <Border Grid.Row="0"
-                        Grid.Column="1"
-                        Padding="16"
-                        StrokeShape="RoundRectangle 20">
-
-                    <VerticalStackLayout HorizontalOptions="Center">
-
-                        <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnStoreTapped"
-                                CommandParameter="Walmart"/>
-                        </VerticalStackLayout.GestureRecognizers>
-
-                        <Image Source="walmart.png"
-                               HeightRequest="56"/>
-
-                        <Label Text="Walmart"
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center"/>
-
-                    </VerticalStackLayout>
-                </Border>
-
-
-                <!-- Target -->
-                <Border Grid.Row="1"
-                        Grid.Column="0"
-                        Padding="16"
-                        StrokeShape="RoundRectangle 20">
-
-                    <VerticalStackLayout HorizontalOptions="Center">
-
-                        <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnStoreTapped"
-                                CommandParameter="Target"/>
-                        </VerticalStackLayout.GestureRecognizers>
-
-                        <Image Source="target.png"
-                               HeightRequest="56"/>
-
-                        <Label Text="Target"
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center"/>
-
-                    </VerticalStackLayout>
-                </Border>
-
-
-                <!-- Aldi -->
-                <Border Grid.Row="1"
-                        Grid.Column="1"
-                        Padding="16"
-                        StrokeShape="RoundRectangle 20">
-
-                    <VerticalStackLayout HorizontalOptions="Center">
-
-                        <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnStoreTapped"
-                                CommandParameter="Aldi"/>
-                        </VerticalStackLayout.GestureRecognizers>
-
-                        <Image Source="aldi.png"
-                               HeightRequest="56"/>
-
-                        <Label Text="Aldi"
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center"/>
-
-                    </VerticalStackLayout>
-                </Border>
-
             </Grid>
-
-
-            <!-- PRIMARY ACTION -->
-            <Button Text="View Grocery Lists"
-                    HeightRequest="52"
-                    FontSize="18"
-                    CornerRadius="18"
-                    Style="{StaticResource PrimaryButton}"/>
-
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
+     

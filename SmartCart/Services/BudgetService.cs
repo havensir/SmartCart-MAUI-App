@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.Graphics;
-
-namespace SmartCart.Services
+﻿namespace SmartCart.Services
 {
     public class BudgetService
     {

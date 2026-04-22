@@ -43,20 +43,16 @@ namespace SmartCart.Database
         public Task<List<GroceryItem>> GetItemsAsync(int listId)
         {
             return _database.Table<GroceryItem>()
-            .Where(x => x.ListId == listId)
-            .ToListAsync();
+                .Where(x => x.ListId == listId)
+                .ToListAsync();
         }
 
         public Task<int> SaveItemAsync(GroceryItem item)
         {
-            if (item.ItemId != 0)
-            {
+            if (item.Id != 0)
                 return _database.UpdateAsync(item);
-            }
             else
-            {
                 return _database.InsertAsync(item);
-            }
         }
 
         public Task<int> DeleteItemAsync(GroceryItem item)

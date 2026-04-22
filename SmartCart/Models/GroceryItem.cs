@@ -1,32 +1,53 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SQLite;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SmartCart.Models
 {
-    public class GroceryItem
+    public class GroceryItem : INotifyPropertyChanged
     {
-        // backend-christopher
-
         [PrimaryKey, AutoIncrement]
-        public int ItemId { get; set; }
+        public int Id { get; set; }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        private string _category;
+        public string Category
+        {
+            get => _category;
+            set => SetProperty(ref _category, value);
+        }
+
+        private int _quantity;
+        public int Quantity
+        {
+            get => _quantity;
+            set => SetProperty(ref _quantity, value);
+        }
 
         public int ListId { get; set; }
 
-        [NotNull]
-        // Only one Name property
-        public string Name { get; set; }
+        // ?? THIS IS WHAT FIXES YOUR UI
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        // Only one Quantity property
-        public int Quantity { get; set; }
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
-        public decimal Price { get; set; }
+        protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (Equals(backingStore, value))
+                return false;
 
-        [Ignore]
-        public decimal TotalCost => Price * Quantity;
-        // dev
+            backingStore = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
     }
 }

@@ -10,16 +10,12 @@
             ContentTemplate="{DataTemplate views:HomePage}" />
 
         <ShellContent
-            Title="Lists"
-            ContentTemplate="{DataTemplate views:GroceryListPage}" />
-
-        <ShellContent
             Title="Budget"
             ContentTemplate="{DataTemplate views:BudgetPage}" />
 
         <ShellContent
-            Title="Add Item"
-            ContentTemplate="{DataTemplate views:AddItemPage}"/>
+            Title="List"
+            ContentTemplate="{DataTemplate views:GroceryListPage}" />
 
     </TabBar>
 </Shell>

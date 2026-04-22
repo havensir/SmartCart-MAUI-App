@@ -1,87 +1,94 @@
-﻿
-using SmartCart.Models;
+﻿using SmartCart.Models;
 using SmartCart.ViewModels;
 
 namespace SmartCart.Views;
+
+[QueryProperty(nameof(ListId), "listId")]
 public partial class GroceryListPage : ContentPage
 {
     private readonly GroceryListViewModel _viewModel;
-    public GroceryListPage(GroceryListViewModel viewModel)
+    private readonly BudgetViewModel _budgetViewModel;
+
+    public GroceryListPage(GroceryListViewModel viewModel, BudgetViewModel budgetViewModel)
     {
         InitializeComponent();
 
-        // TODO (Isabella - Integration): Ensure ViewModel is shared across pages (not recreated each time)
-        BindingContext = _viewModel = viewModel;
-    }
+        _viewModel = viewModel;
+        _budgetViewModel = budgetViewModel;
 
-    private void OnRaiseQuantityNumber(object sender, EventArgs e)
-    {
-        // TODO (Xander - Logic): Prevent quantity from exceeding reasonable limit
-
-        var button = sender as Button;
-        var item = button?.BindingContext as GroceryItem;
-        var vm = BindingContext as GroceryListViewModel;
-
-        if (item != null && vm != null)
-        {
-            item.Quantity++;
-            vm.UpdateTotals(vm.Items.ToList());
-        }
-
-        // TODO (Isabella - Integration): REMOVE BindingContext reset once INotifyPropertyChanged is fixed
-        BindingContext = null;
-        BindingContext = vm;
-    }
-
-    private void OnLowerQuantityNumber(object sender, EventArgs e)
-    {
-        // TODO (Xander - Logic): Prevent quantity from going below 0
-
-        var button = sender as Button;
-        var item = button?.BindingContext as GroceryItem;
-        var vm = BindingContext as GroceryListViewModel;
-
-        if (item != null && vm != null && item.Quantity > 0)
-        {
-            item.Quantity--;
-            vm.UpdateTotals(vm.Items.ToList());
-        }
-
-        // TODO (Isabella - Integration): REMOVE BindingContext reset once binding is fixed
-        BindingContext = null;
-        BindingContext = vm;
-    }
-
-    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
-    {
-        // TODO (Xander - Logic): Implement search/filter logic
-        // Added search and filter logic by Melissa
-        string searchText = e.NewTextValue?.ToLower();
-
-        if (string.IsNullOrWhiteSpace(searchText))
-        {
-            _viewModel.LoadDefaultItems();
-            RefreshPage();
-            return;
-        }
-
-        var filtered = _viewModel.Items
-            .Where(x => x.Name.ToLower().Contains(searchText))
-            .ToList();
-
-        _viewModel.Items.Clear();
-
-        foreach (var item in filtered)
-        {
-            _viewModel.Items.Add(item);
-        }
-
-        RefreshPage();
-    }
-
-        private void RefreshPage()
-    {
-        BindingContext = null;
         BindingContext = _viewModel;
+    }
+
+    public string ListId
+    {
+        set
+        {
+            if (int.TryParse(value, out int id))
+            {
+                _viewModel.ListId = id;
+                _budgetViewModel.CurrentListId = id;
+            }
+        }
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (_viewModel.ListId == 0)
+        {
+            var lists = await _viewModel.GetListsAsync();
+
+            if (lists.Any())
+                _viewModel.ListId = lists.First().ListId;
+        }
+
+        await _viewModel.LoadItemsAsync();
+        await _viewModel.LoadBudgetAsync();
+    }
+
+    private async void OnRaiseQuantityNumber(object sender, EventArgs e)
+    {
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null) return;
+
+        item.Quantity++;
+
+        await _viewModel.SaveItemAsync(item);
+
+        RefreshTotals();
+        await _budgetViewModel.RefreshBudgetFromDatabase();
+    }
+
+    private async void OnLowerQuantityNumber(object sender, EventArgs e)
+    {
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null || item.Quantity <= 0) return;
+
+        item.Quantity--;
+
+        if (item.Quantity == 0)
+        {
+            _viewModel.UserItems.Remove(item);
+            await _viewModel.DeleteItemsAsync(item);
+        }
+        else
+        {
+            await _viewModel.SaveItemAsync(item);
+        }
+
+        RefreshTotals();
+        await _budgetViewModel.RefreshBudgetFromDatabase();
+    }
+
+    private void RefreshTotals()
+    {
+        _viewModel.UpdateTotals(_viewModel.UserItems.ToList());
+        _viewModel.UpdateStoreComparison();
+    }
+
+    private async void OnAddItemsClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"{nameof(AddItemPage)}?listId={_viewModel.ListId}");
     }
 }

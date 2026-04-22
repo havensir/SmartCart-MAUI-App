@@ -1,6 +1,4 @@
-using Microsoft.Maui.Controls;
 using SmartCart.ViewModels;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
 
 namespace SmartCart.Views;
 
@@ -10,11 +8,9 @@ public partial class HomePage : ContentPage
 
     private bool _isLoggedIn;
 
-    // Stored locally (demo approach using Preferences)
     private const string UsernameKey = "smartcart_username";
     private const string PasswordKey = "smartcart_password";
     private const string LoggedInKey = "smartcart_loggedin";
-
 
     private readonly Dictionary<string, string> storeUrls = new()
     {
@@ -28,19 +24,24 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
-        _isLoggedIn = Preferences.Default.Get(LoggedInKey, false);
+
+        MessagingCenter.Subscribe<BudgetViewModel>(this, "BudgetUpdated", async (sender) =>
+        {
+            await _viewModel.LoadBudgetAsync();
+        });
     }
+
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        await _viewModel.LoadListsAsync();
-
-        int currentListId = _viewModel.GroceryList.FirstOrDefault()?.ListId ?? 0;
-        await _viewModel.LoadBudgetAsync(currentListId);
+        await _viewModel.LoadListsAsync(); 
+        await _viewModel.LoadBudgetAsync();
     }
 
+
+    // STORE TAP
     private async void OnStoreTapped(object sender, TappedEventArgs e)
     {
         string store = e.Parameter?.ToString();
@@ -58,10 +59,9 @@ public partial class HomePage : ContentPage
                 $"Go to {store} website?",
                 "Yes",
                 "No");
+
             if (confirm)
-            {
                 await Launcher.OpenAsync(url);
-            }
         }
         else
         {
@@ -69,6 +69,8 @@ public partial class HomePage : ContentPage
         }
     }
 
+
+    // PROFILE
     private async void OnProfileTapped(object sender, EventArgs e)
     {
         if (_isLoggedIn)
@@ -86,16 +88,10 @@ public partial class HomePage : ContentPage
             "Log In",
             "Create Account");
 
-        switch (action)
-        {
-            case "Log In":
-                await PromptLogin();
-                break;
-
-            case "Create Account":
-                await PromptCreateAccount();
-                break;
-        }
+        if (action == "Log In")
+            await PromptLogin();
+        else if (action == "Create Account")
+            await PromptCreateAccount();
     }
 
     private async Task ShowLoggedInMenu()
@@ -126,48 +122,25 @@ public partial class HomePage : ContentPage
 
     private async Task PromptCreateAccount()
     {
-        string username = await DisplayPromptAsync(
-            "Create Account",
-            "Enter a username:");
+        string username = await DisplayPromptAsync("Create Account", "Enter a username:");
+        if (string.IsNullOrWhiteSpace(username)) return;
 
-        if (string.IsNullOrWhiteSpace(username))
-            return;
-
-        string password = await DisplayPromptAsync(
-            "Create Account",
-            "Enter a password:",
-            accept: "Save",
-            cancel: "Cancel");
-
-        if (string.IsNullOrWhiteSpace(password))
-            return;
+        string password = await DisplayPromptAsync("Create Account", "Enter a password:");
+        if (string.IsNullOrWhiteSpace(password)) return;
 
         Preferences.Default.Set(UsernameKey, username);
         Preferences.Default.Set(PasswordKey, password);
 
-        await DisplayAlert(
-            "Account Created",
-            "Your account has been created successfully.",
-            "OK");
+        await DisplayAlert("Account Created", "Your account has been created successfully.", "OK");
     }
 
     private async Task PromptLogin()
     {
-        string username = await DisplayPromptAsync(
-            "Log In",
-            "Username:");
+        string username = await DisplayPromptAsync("Log In", "Username:");
+        if (string.IsNullOrWhiteSpace(username)) return;
 
-        if (string.IsNullOrWhiteSpace(username))
-            return;
-
-        string password = await DisplayPromptAsync(
-            "Log In",
-            "Password:",
-            accept: "Log In",
-            cancel: "Cancel");
-
-        if (string.IsNullOrWhiteSpace(password))
-            return;
+        string password = await DisplayPromptAsync("Log In", "Password:");
+        if (string.IsNullOrWhiteSpace(password)) return;
 
         string savedUser = Preferences.Default.Get(UsernameKey, "");
         string savedPass = Preferences.Default.Get(PasswordKey, "");
@@ -177,66 +150,44 @@ public partial class HomePage : ContentPage
             _isLoggedIn = true;
             Preferences.Default.Set(LoggedInKey, true);
 
-            await DisplayAlert(
-                "Welcome",
-                $"Logged in as {username}",
-                "OK");
+            await DisplayAlert("Welcome", $"Logged in as {username}", "OK");
         }
         else
         {
-            await DisplayAlert(
-                "Login Failed",
-                "Invalid username or password.",
-                "OK");
+            await DisplayAlert("Login Failed", "Invalid username or password.", "OK");
         }
     }
 
-       private async Task ChangeUsername()
+    private async Task ChangeUsername()
     {
-        string newUser = await DisplayPromptAsync(
-            "Change Username",
-            "Enter new username:");
-
-        if (string.IsNullOrWhiteSpace(newUser))
-            return;
+        string newUser = await DisplayPromptAsync("Change Username", "Enter new username:");
+        if (string.IsNullOrWhiteSpace(newUser)) return;
 
         Preferences.Default.Set(UsernameKey, newUser);
 
-        await DisplayAlert(
-            "Updated",
-            "Username changed successfully.",
-            "OK");
+        await DisplayAlert("Updated", "Username changed successfully.", "OK");
     }
 
     private async Task ChangePassword()
     {
-        string newPass = await DisplayPromptAsync(
-            "Change Password",
-            "Enter new password:");
-
-        if (string.IsNullOrWhiteSpace(newPass))
-            return;
+        string newPass = await DisplayPromptAsync("Change Password", "Enter new password:");
+        if (string.IsNullOrWhiteSpace(newPass)) return;
 
         Preferences.Default.Set(PasswordKey, newPass);
 
-        await DisplayAlert(
-            "Updated",
-            "Password changed successfully.",
-            "OK");
+        await DisplayAlert("Updated", "Password changed successfully.", "OK");
     }
 
     private async Task LogOut()
     {
         _isLoggedIn = false;
-
         Preferences.Default.Set(LoggedInKey, false);
 
-        await DisplayAlert(
-            "Logged Out",
-            "You have been signed out.",
-            "OK");
+        await DisplayAlert("Logged Out", "You have been signed out.", "OK");
     }
 
+
+    // SHARE
     private async void OnShareTapped(object sender, EventArgs e)
     {
         await Share.Default.RequestAsync(new ShareTextRequest
@@ -247,11 +198,6 @@ public partial class HomePage : ContentPage
         });
     }
 
-    private async void OnCartTapped(object sender, EventArgs e)
-    {
-        // TODO: Implement cart tapped logic here
-    }
-
     private async void OnViewGroceryListsClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(GroceryListPage));
@@ -260,5 +206,27 @@ public partial class HomePage : ContentPage
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(BudgetPage));
+    }
+
+    private async void OnHelpTapped(object sender, EventArgs e)
+    {
+        await DisplayAlert(
+            "Getting Started With SmartCart!",
+            "SmartCart helps you plan smarter grocery trips by comparing store prices and tracking your budget.\n\n" +
+
+            "1. Create an account or log in (optional)\n\n" +
+            "2. Set a budget to plan your shopping\n\n" +
+            "3. Add items to your grocery list\n\n" +
+            "4. See the lowest store pricing automatically\n\n" +
+            "  --> Compare prices across popular grocery stores\n\n" +
+            "  --> Browse store pages directly from the homepage\n\n" +
+
+            "Coming soon:\n" +
+            "• Add custom items\n" +
+            "• Enhanced homepage budget bar\n\n" +
+
+            "Note: Prices are based on recently collected public data and are intended for comparison purposes only. Actual prices may vary by location and/or time.",
+            "Got it!"
+        );
     }
 }

@@ -2,64 +2,159 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.AddItemPage"
-             Title="AddItemPage">
+             Title="Add Items"
+             BackgroundColor="#F7F9FC">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,Auto,*"
+          RowSpacing="18">
 
-            
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Text="Add Grocery Item"
-                       Style="{StaticResource PageTitle}"/>
-                
-                <VerticalStackLayout Grid.Column="1"
-                                       HorizontalOptions="Center"
-                                       Padding="0,0,10,0"
-                                       Spacing="2">
-                </VerticalStackLayout>
-                
-                <Image Grid.Column="1"
-                       Source="cart.png"
-                       WidthRequest="26"
-                       HeightRequest="26">
+        <!-- HEADER -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="Add Items"
+                   Style="{StaticResource PageTitle}" />
 
-
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCartTapped"/>
-                    </Image.GestureRecognizers>
-                </Image>
-            </Grid>
-            
-            <Entry x:Name="NameEntry"
-                   Placeholder="Item Name"/>
-            
-            <Entry x:Name="DescriptionEntry"
-                   Placeholder="Description"/>
-
-            <Entry x:Name="PriceEntry"
-                   Placeholder="Price"
-                   Keyboard="Numeric"/>
-
-            <Picker x:Name="CategoryPicker"
-                    Title="Category">
-                <Picker.Items>
-                    <x:String>Dairy</x:String>
-                    <x:String>Produce</x:String>
-                    <x:String>Bakery</x:String>
-                    <x:String>Meat</x:String>
-                    <x:String>Frozen</x:String>
-                </Picker.Items>
-            </Picker>
-
-            <Button Text="+ Add Item To Cart"
-                    Style="{StaticResource PrimaryButton}"
-                    Clicked="OnAddItemClicked"/>
-
-            <Button Text="X Delete Item From Cart"
-                    BackgroundColor="{StaticResource DangerColor}"
-                    TextColor="#FEFEFA"
-                    Clicked="OnDeleteItemClicked"/>
-
+            <Label Text="Browse and add items to your list"
+                   FontSize="14"
+                   FontAttributes="Italic"
+                   TextColor="#777" />
         </VerticalStackLayout>
-    </ScrollView>
+
+        <!-- SEARCH -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Padding="14">
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Image Source="search.png"
+                       HeightRequest="20"
+                       Opacity="0.6" />
+
+                <Entry Grid.Column="1"
+                       Placeholder="Search groceries..."
+                       BackgroundColor="Transparent"
+                       TextChanged="OnSearchTextChanged" />
+            </Grid>
+        </Border>
+
+        <!-- DEPARTMENTS -->
+        <VerticalStackLayout Grid.Row="2" Spacing="8">
+            <Label Text="Shop by Department"
+           FontSize="18"
+           FontAttributes="Bold" />
+
+            <CollectionView ItemsSource="{Binding Departments}"
+                    SelectionMode="Single"
+                    SelectionChanged="OnDepartmentSelected"
+                    HeightRequest="120">
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="3" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+
+                        <Border x:Name="DepartmentBorder"
+                        Stroke="{StaticResource PrimaryColor}"
+                        StrokeThickness="1"
+                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 16"
+                        Margin="5"
+                        Padding="14">
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="White" />
+                                            <Setter Property="Stroke" Value="{StaticResource PrimaryColor}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E8F0FE" />
+                                            <Setter Property="Stroke" Value="#1D4ED8" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Label Text="{Binding}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
+                        </Border>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+
+        <!-- ITEMS -->
+        <Grid Grid.Row="3"
+      RowDefinitions="Auto,*"
+      RowSpacing="10">
+
+            <CollectionView Grid.Row="1"
+                    ItemsSource="{Binding Items}"
+                    SelectionMode="None">
+                
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}"
+                        Padding="16"
+                        Margin="10,0,10,10">
+
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto"
+      VerticalOptions="Center">
+
+                                <!-- NAME -->
+                                <Label Text="{Binding Name}"
+           FontAttributes="Bold"
+           FontSize="17"
+           VerticalOptions="Center" />
+
+                                <!-- MINUS BUTTON -->
+                                <Button Grid.Column="1"
+            Text="-"
+            WidthRequest="36"
+            HeightRequest="36"
+            CornerRadius="18"
+            BackgroundColor="#E5E7EB"
+            TextColor="Black"
+            Clicked="OnDecreaseItem"/>
+
+                                <!-- QUANTITY -->
+                                <Label Grid.Column="2"
+           Text="{Binding Quantity}"
+           FontSize="16"
+           VerticalOptions="Center"
+           HorizontalOptions="Center"
+           Margin="8,0"/>
+
+                                <!-- PLUS BUTTON -->
+                                <Button Grid.Column="3"
+            Text="+"
+            WidthRequest="36"
+            HeightRequest="36"
+            CornerRadius="18"
+            BackgroundColor="{StaticResource PrimaryColor}"
+            TextColor="White"
+            Clicked="OnQuickAddItem"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </Grid>
 </ContentPage>

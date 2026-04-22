@@ -2,48 +2,33 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.BudgetPage"
-             Title="BudgetPage">
+             Title="BudgetPage"
+             BackgroundColor="#F7F9FC">
+    
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
             <!-- DISPLAY SECTION -->
             <Label Text="Your Budget"
-           Style="{StaticResource PageTitle}"/>
-
-            <Border Style="{StaticResource CardStyle}">
-                <VerticalStackLayout Spacing="10">
-
-                    <Label Text="{Binding BudgetName}"
-       FontSize="18"
-       FontAttributes="Bold"/>
-
-                    <Label Text="{Binding BudgetSummaryText}"
-                   FontAttributes="Bold"/>
-
-                    <ProgressBar Progress="{Binding BudgetProgress}"
-                         HeightRequest="8"/>
-
-                    <Label Text="{Binding RemainingBudgetText}"
-       TextColor="{Binding ProgressBarColor}"
-                   FontAttributes="Bold"
-                   HorizontalOptions="End"/>
-
-                </VerticalStackLayout>
-            </Border>
+       Style="{StaticResource PageTitle}"/>
 
             <!-- CREATE SECTION -->
             <Label Text="Create or Update Budget"
            Style="{StaticResource SectionTitle}"/>
+            <Border 
+    BackgroundColor="White"
+    Stroke="#DCE3EB"
+    StrokeShape="RoundRectangle 22"
+    Padding="22">
 
-            <Border Style="{StaticResource CardStyle}">
                 <VerticalStackLayout Spacing="12">
 
                     <Entry Placeholder="Budget Name" 
-                   Text="{Binding BudgetName}" />
+               Text="{Binding BudgetName}" />
 
                     <Entry Placeholder="Budget Amount"
-                   Keyboard="Numeric"
-                   Text="{Binding BudgetAmount}" />
+               Keyboard="Numeric"
+               Text="{Binding BudgetAmount}" />
 
                     <Label Text="Budget Period"/>
 
@@ -54,12 +39,16 @@
                     </HorizontalStackLayout>
 
                     <Editor Placeholder="Notes (Optional)"
-                    Text="{Binding BudgetNotes}"
-                    HeightRequest="80"/>
+                Text="{Binding BudgetNotes}"
+                HeightRequest="80"/>
 
-                    <Button Text="Save Budget"
-                    Command="{Binding SaveBudgetCommand}"
-                    Style="{StaticResource PrimaryButton}"/>
+                    <Button Text="Save"
+                Command="{Binding SaveBudgetCommand}"
+                Style="{StaticResource PrimaryButton}"/>
+
+                    <Button Text="Clear All"
+                Command="{Binding DeleteAllBudgetInfoCommand}"
+                BackgroundColor="{StaticResource DangerColor}"/>
 
                 </VerticalStackLayout>
             </Border>

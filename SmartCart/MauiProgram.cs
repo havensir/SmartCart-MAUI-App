@@ -12,6 +12,8 @@ namespace SmartCart
         {
             var builder = MauiApp.CreateBuilder();
 
+            //File.Delete(Path.Combine(FileSystem.AppDataDirectory, "smartcart_v2.db"));
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -24,24 +26,28 @@ namespace SmartCart
             builder.Logging.AddDebug();
 #endif
 
-            // Register DatabaseService with the database path
+            // Database
             builder.Services.AddSingleton<DatabaseService>(sp =>
             {
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "smartcart.db");
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "smartcart_v2.db");
                 return new DatabaseService(dbPath);
             });
 
-            builder.Services.AddSingleton<CartService>();
+            // Services
+            builder.Services.AddSingleton<BudgetService>();
 
-            // Register ViewModels
+            // ViewModels
             builder.Services.AddSingleton<HomeViewModel>();
-            builder.Services.AddTransient<GroceryListViewModel>();
+
             builder.Services.AddTransient<BudgetViewModel>();
 
-            // Register Pages
+            builder.Services.AddTransient<GroceryListViewModel>();
+
+            // Pages
             builder.Services.AddSingleton<HomePage>();
             builder.Services.AddTransient<GroceryListPage>();
             builder.Services.AddTransient<BudgetPage>();
+            builder.Services.AddTransient<AddItemPage>();
 
             return builder.Build();
         }

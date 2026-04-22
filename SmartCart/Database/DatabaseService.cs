@@ -1,10 +1,4 @@
 using SmartCart.Models;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmartCart.Database
 {
@@ -51,9 +45,10 @@ namespace SmartCart.Database
         }
 
         // Budgets
-        public Task<List<Budget>> GetBudgetsAsync()
+        public async Task<Budget?> GetCurrentBudgetAsync()
         {
-            return _database.GetBudgetsAsync();
+            var budgets = await _database.GetBudgetsAsync();
+            return budgets.OrderByDescending(b => b.BudgetId).FirstOrDefault();
         }
 
         public Task<int> SaveBudgetAsync(Budget budget)
@@ -66,12 +61,11 @@ namespace SmartCart.Database
             return _database.DeleteBudgetAsync(budget);
         }
 
-        public async Task<decimal> GetTotalSpentAsync()
+        public async Task<Budget?> GetBudgetByListIdAsync(int listId)
         {
-            var items = await _database.GetItemsAsync(0);
-            return items.Sum(i => i.Price * i.Quantity);
+            var budgets = await _database.GetBudgetsAsync();
+            return budgets.FirstOrDefault(b => b.ListId == listId);
         }
-
 
     }
 }
