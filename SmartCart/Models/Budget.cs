@@ -10,14 +10,13 @@ namespace SmartCart.Models
 
         [NotNull]
         public string BudgetName { get; set; }
+        public int ListId { get; set; }
 
         // Use decimal for currency values
         public decimal Amount { get; set; }
 
         public decimal Limit { get; set; }
 
-        // Computed properties – not stored in SQLite
-        [Ignore]
         public decimal Remaining { get; set; }
 
         [Ignore]

@@ -24,25 +24,28 @@ namespace SmartCart
             builder.Logging.AddDebug();
 #endif
 
-            // Register DatabaseService with the database path
+            // Database
             builder.Services.AddSingleton<DatabaseService>(sp =>
             {
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, "smartcart_v2.db");
                 return new DatabaseService(dbPath);
             });
 
-            builder.Services.AddSingleton<HomeViewModel>();
+            // Services
             builder.Services.AddSingleton<BudgetService>();
-            builder.Services.AddTransient<GroceryListViewModel>();
+
+            // ViewModels
+            builder.Services.AddSingleton<HomeViewModel>();
+
             builder.Services.AddTransient<BudgetViewModel>();
 
+            builder.Services.AddTransient<GroceryListViewModel>();
+
+            // Pages
             builder.Services.AddSingleton<HomePage>();
             builder.Services.AddTransient<GroceryListPage>();
             builder.Services.AddTransient<BudgetPage>();
             builder.Services.AddTransient<AddItemPage>();
-
-            builder.Services.AddTransient<GroceryListViewModel>();
-            builder.Services.AddTransient<GroceryListPage>();
 
             return builder.Build();
         }

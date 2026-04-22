@@ -1,4 +1,3 @@
-using SmartCart.Models;
 using SmartCart.ViewModels;
 
 namespace SmartCart.Views;
@@ -32,7 +31,18 @@ public partial class BudgetPage : ContentPage
         base.OnAppearing();
 
         if (_viewModel.CurrentListId == 0)
-            _viewModel.CurrentListId = _listId;
+        {
+            var lists = await _viewModel.GetListsAsync();
+
+            var latest = lists
+                .OrderByDescending(l => l.ListId)
+                .FirstOrDefault();
+
+            if (latest != null)
+            {
+                _viewModel.CurrentListId = latest.ListId;
+            }
+        }
 
         await _viewModel.LoadBudgetAsync();
         await _viewModel.RefreshBudgetFromDatabase();

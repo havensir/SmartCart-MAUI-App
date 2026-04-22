@@ -110,12 +110,6 @@
                            HorizontalOptions="Center"
                            TextColor="#6B7280" />
 
-                                <Label Text="{Binding RemainingBudgetText}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           TextColor="#1D4ED8" />
-
                                 <ProgressBar Progress="{Binding BudgetProgress}"
                                  HeightRequest="10"
                                  ProgressColor="#16A34A"
@@ -178,16 +172,6 @@
                            HorizontalTextAlignment="Center"/>
                                     </VerticalStackLayout>
 
-                                    <VerticalStackLayout Grid.Column="1"
-                                     Padding="10"
-                                     Spacing="5"
-                                     VerticalOptions="Center">
-
-                                        <Label Text="{Binding ProduceDisplay, StringFormat='Produce: {0}'}" />
-                                        <Label Text="{Binding MeatDisplay, StringFormat='Meat: {0}'}" />
-                                        <Label Text="{Binding DairyDisplay, StringFormat='Dairy: {0}'}" />
-
-                                    </VerticalStackLayout>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

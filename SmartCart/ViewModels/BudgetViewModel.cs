@@ -171,8 +171,7 @@ namespace SmartCart.ViewModels
 
         private async Task OnSaveBudget()
         {
-            var existing = await _databaseService.GetCurrentBudgetAsync();
-
+            var existing = await _databaseService.GetBudgetByListIdAsync(CurrentListId);
             if (string.IsNullOrWhiteSpace(BudgetName))
             {
                 await Shell.Current.DisplayAlert("Error", "Budget name is required.", "OK");
@@ -195,6 +194,7 @@ namespace SmartCart.ViewModels
                 existing.BudgetName = BudgetName.Trim();
                 existing.Amount = amount;
                 existing.Limit = amount;
+                existing.Remaining = amount;
 
                 await _databaseService.SaveBudgetAsync(existing);
             }
@@ -205,7 +205,8 @@ namespace SmartCart.ViewModels
                     BudgetName = BudgetName.Trim(),
                     Amount = amount,
                     Limit = amount,
-                    Remaining = amount
+                    Remaining = amount,
+                    ListId = CurrentListId
                 };
 
                 await _databaseService.SaveBudgetAsync(budget);
@@ -219,8 +220,6 @@ namespace SmartCart.ViewModels
                 "Saved",
                 $"Budget '{BudgetName}' saved successfully!\n\nAmount: ${amount:F2}\n\nPeriod: {BudgetPeriod}",
                 "OK");
-
-            await Shell.Current.GoToAsync("..");
         }
 
         private async Task OnDeleteBudget()
@@ -270,6 +269,11 @@ namespace SmartCart.ViewModels
             await Shell.Current.GoToAsync("..");
         }
 
+        public async Task<List<GroceryList>> GetListsAsync()
+        {
+            return await _databaseService.GetListsAsync();
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected bool SetProperty<T>(ref T backingStore, T value,
@@ -287,7 +291,7 @@ namespace SmartCart.ViewModels
         {
             await LoadPriceDataAsync();
 
-            var budget = await _databaseService.GetCurrentBudgetAsync();
+            var budget = await _databaseService.GetBudgetByListIdAsync(CurrentListId);
 
             if (budget == null)
             {

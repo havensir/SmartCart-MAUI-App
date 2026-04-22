@@ -1,7 +1,5 @@
-using Microsoft.Maui.Controls;
 using SmartCart.Models;
 using SmartCart.ViewModels;
-using System;
 
 namespace SmartCart.Views;
 
@@ -105,6 +103,7 @@ public partial class AddItemPage : ContentPage
         item.Quantity++;
 
         await _viewModel.SaveItemAsync(item);
+        await _viewModel.LoadItemsAsync();
     }
 
     private async void OnDecreaseItem(object sender, EventArgs e)

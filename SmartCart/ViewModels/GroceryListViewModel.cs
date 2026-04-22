@@ -9,6 +9,7 @@ namespace SmartCart.ViewModels
 {
     public class GroceryListViewModel : INotifyPropertyChanged
     {
+        private readonly BudgetViewModel _budgetViewModel;
         private readonly DatabaseService _databaseService;
 
         public int ListId { get; set; }
@@ -23,9 +24,19 @@ namespace SmartCart.ViewModels
 
         private decimal _total;
 
-        public GroceryListViewModel(DatabaseService databaseService)
+        // BUDGET PROPERTIES (exposed to UI)
+        public string BudgetName => _budgetViewModel?.BudgetName;
+        public bool HasBudget => _budgetViewModel?.HasBudget ?? false;
+        public bool NoBudget => _budgetViewModel?.NoBudget ?? true;
+        public string BudgetSummaryText => _budgetViewModel?.BudgetSummaryText;
+        public double BudgetProgress => _budgetViewModel?.BudgetProgress ?? 0;
+        public string RemainingBudgetText => _budgetViewModel?.RemainingBudgetText;
+        public Color ProgressBarColor => _budgetViewModel?.ProgressBarColor;
+
+        public GroceryListViewModel(DatabaseService databaseService, BudgetViewModel budgetViewModel)
         {
             _databaseService = databaseService;
+            _budgetViewModel = budgetViewModel;
         }
 
         //
@@ -281,7 +292,13 @@ namespace SmartCart.ViewModels
         {
             await _databaseService.DeleteItemAsync(item);
 
-            await LoadItemsAsync();
+            var items = await _databaseService.GetItemsAsync(item.ListId);
+
+            UserItems.Clear();
+            foreach (var i in items)
+                UserItems.Add(i);
+
+            UpdateTotals(UserItems.ToList());
         }
 
 
@@ -301,6 +318,13 @@ namespace SmartCart.ViewModels
             Total = totals.Min(x => x.Value);
 
             MessagingCenter.Send(this, "UpdateBudget", Total);
+            OnPropertyChanged(nameof(BudgetName));
+            OnPropertyChanged(nameof(HasBudget));
+            OnPropertyChanged(nameof(NoBudget));
+            OnPropertyChanged(nameof(BudgetSummaryText));
+            OnPropertyChanged(nameof(BudgetProgress));
+            OnPropertyChanged(nameof(RemainingBudgetText));
+            OnPropertyChanged(nameof(ProgressBarColor));
         }
 
         public decimal Total
@@ -322,6 +346,21 @@ namespace SmartCart.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public async Task LoadBudgetAsync()
+        {
+            _budgetViewModel.CurrentListId = ListId;
+
+            await _budgetViewModel.LoadBudgetAsync();
+
+            OnPropertyChanged(nameof(BudgetName));
+            OnPropertyChanged(nameof(HasBudget));
+            OnPropertyChanged(nameof(NoBudget));
+            OnPropertyChanged(nameof(BudgetSummaryText));
+            OnPropertyChanged(nameof(BudgetProgress));
+            OnPropertyChanged(nameof(RemainingBudgetText));
+            OnPropertyChanged(nameof(ProgressBarColor));
         }
     }
 }

@@ -61,5 +61,11 @@ namespace SmartCart.Database
             return _database.DeleteBudgetAsync(budget);
         }
 
+        public async Task<Budget?> GetBudgetByListIdAsync(int listId)
+        {
+            var budgets = await _database.GetBudgetsAsync();
+            return budgets.FirstOrDefault(b => b.ListId == listId);
+        }
+
     }
 }

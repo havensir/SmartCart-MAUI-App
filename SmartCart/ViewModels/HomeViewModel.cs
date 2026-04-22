@@ -3,23 +3,38 @@ using SmartCart.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 
 namespace SmartCart.ViewModels
 {
     public class HomeViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService _databaseService;
+        private readonly BudgetViewModel _budgetViewModel;
 
         public ObservableCollection<StoreInfo> Stores { get; set; } = new();
         public ObservableCollection<GroceryList> GroceryList { get; set; } = new();
 
         public List<StorePrice> PriceData { get; set; } = new();
 
-        public HomeViewModel(DatabaseService databaseService)
+        public HomeViewModel(DatabaseService databaseService, BudgetViewModel budgetViewModel)
         {
             _databaseService = databaseService;
+            _budgetViewModel = budgetViewModel;
         }
+
+
+        // INITIAL LOAD
+
+        public async Task InitializeAsync()
+        {
+            await LoadPriceDataAsync();
+            await LoadListsAsync();
+            LoadStores();
+            await LoadBudgetAsync();
+        }
+
+
+        // PRICE DATA
 
         public async Task LoadPriceDataAsync()
         {
@@ -56,21 +71,9 @@ namespace SmartCart.ViewModels
                 });
             }
         }
-        public async Task InitializeAsync()
-        {
-            await LoadPriceDataAsync();
-            LoadStores();
-        }
 
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public ICommand StoreTappedCommand { get; }
+        // STORES
 
         public void LoadStores()
         {
@@ -78,59 +81,27 @@ namespace SmartCart.ViewModels
 
             decimal Avg(IEnumerable<decimal> list) => list.Any() ? list.Average() : 0;
 
-            var walmartProduce = PriceData.Where(p => p.Category == "Produce").Select(p => p.Walmart);
-            var walmartMeat = PriceData.Where(p => p.Category == "Meat").Select(p => p.Walmart);
-            var walmartDairy = PriceData.Where(p => p.Category == "Dairy").Select(p => p.Walmart);
-
-            var krogerProduce = PriceData.Where(p => p.Category == "Produce").Select(p => p.Kroger);
-            var krogerMeat = PriceData.Where(p => p.Category == "Meat").Select(p => p.Kroger);
-            var krogerDairy = PriceData.Where(p => p.Category == "Dairy").Select(p => p.Kroger);
-
-            var aldiProduce = PriceData.Where(p => p.Category == "Produce").Select(p => p.Aldi);
-            var aldiMeat = PriceData.Where(p => p.Category == "Meat").Select(p => p.Aldi);
-            var aldiDairy = PriceData.Where(p => p.Category == "Dairy").Select(p => p.Aldi);
-
-            var targetProduce = PriceData.Where(p => p.Category == "Produce").Select(p => p.Target);
-            var targetMeat = PriceData.Where(p => p.Category == "Meat").Select(p => p.Target);
-            var targetDairy = PriceData.Where(p => p.Category == "Dairy").Select(p => p.Target);
-
             var storeList = new List<StoreInfo>
             {
-                new StoreInfo
-                {
-                    Name = "Walmart",
-                    Image = "walmart.png",
-                    Url = "https://www.walmart.com",
-                    ProduceAverage = Avg(walmartProduce),
-                    MeatAverage = Avg(walmartMeat),
-                    DairyAverage = Avg(walmartDairy)
+                new StoreInfo { Name = "Walmart", Image = "walmart.png", Url = "https://www.walmart.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Walmart)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Walmart)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Walmart))
                 },
-                new StoreInfo
-                {
-                    Name = "Kroger",
-                    Image = "kroger.png",
-                    Url = "https://www.kroger.com",
-                    ProduceAverage = Avg(krogerProduce),
-                    MeatAverage = Avg(krogerMeat),
-                    DairyAverage = Avg(krogerDairy)
+                new StoreInfo { Name = "Kroger", Image = "kroger.png", Url = "https://www.kroger.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Kroger)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Kroger)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Kroger))
                 },
-                new StoreInfo
-                {
-                    Name = "Aldi",
-                    Image = "aldi.png",
-                    Url = "https://www.aldi.us",
-                    ProduceAverage = Avg(aldiProduce),
-                    MeatAverage = Avg(aldiMeat),
-                    DairyAverage = Avg(aldiDairy)
+                new StoreInfo { Name = "Aldi", Image = "aldi.png", Url = "https://www.aldi.us",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Aldi)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Aldi)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Aldi))
                 },
-                new StoreInfo
-                {
-                    Name = "Target",
-                    Image = "target.png",
-                    Url = "https://www.target.com",
-                    ProduceAverage = Avg(targetProduce),
-                    MeatAverage = Avg(targetMeat),
-                    DairyAverage = Avg(targetDairy)
+                new StoreInfo { Name = "Target", Image = "target.png", Url = "https://www.target.com",
+                    ProduceAverage = Avg(PriceData.Where(p => p.Category == "Produce").Select(p => p.Target)),
+                    MeatAverage = Avg(PriceData.Where(p => p.Category == "Meat").Select(p => p.Target)),
+                    DairyAverage = Avg(PriceData.Where(p => p.Category == "Dairy").Select(p => p.Target))
                 }
             };
 
@@ -147,77 +118,8 @@ namespace SmartCart.ViewModels
             OnPropertyChanged(nameof(Stores));
         }
 
-        private decimal _budgetAmount;
-        private decimal _remainingBudget;
-        private double _budgetProgress;
-        private string _budgetSummaryText = string.Empty;
-        private string _remainingBudgetText = string.Empty;
-        private string _budgetTitle = string.Empty;
 
-        public decimal BudgetAmount
-        {
-            get => _budgetAmount;
-            set
-            {
-                _budgetAmount = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(HasBudget));
-                OnPropertyChanged(nameof(NeedsBudget));
-            }
-        }
-
-        public bool HasBudget => BudgetAmount > 0;
-        public bool NeedsBudget => !HasBudget;
-
-        public decimal RemainingBudget
-        {
-            get => _remainingBudget;
-            set
-            {
-                _remainingBudget = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public double BudgetProgress
-        {
-            get => _budgetProgress;
-            set
-            {
-                _budgetProgress = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string BudgetTitle
-        {
-            get => _budgetTitle;
-            set
-            {
-                _budgetTitle = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string BudgetSummaryText
-        {
-            get => _budgetSummaryText;
-            set
-            {
-                _budgetSummaryText = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string RemainingBudgetText
-        {
-            get => _remainingBudgetText;
-            set
-            {
-                _remainingBudgetText = value;
-                OnPropertyChanged();
-            }
-        }
+        // LISTS
 
         public async Task LoadListsAsync()
         {
@@ -233,33 +135,56 @@ namespace SmartCart.ViewModels
             }
         }
 
+
+        // BUDGET (FIXED)
+
+        private decimal _budgetAmount;
+        private double _budgetProgress;
+        private string _budgetSummaryText = "";
+        private string _remainingBudgetText = "";
+        private string _budgetTitle = "";
+
+        public decimal BudgetAmount { get => _budgetAmount; set { _budgetAmount = value; OnPropertyChanged(); } }
+        public double BudgetProgress { get => _budgetProgress; set { _budgetProgress = value; OnPropertyChanged(); } }
+        public string BudgetSummaryText { get => _budgetSummaryText; set { _budgetSummaryText = value; OnPropertyChanged(); } }
+        public string RemainingBudgetText { get => _remainingBudgetText; set { _remainingBudgetText = value; OnPropertyChanged(); } }
+        public string BudgetTitle { get => _budgetTitle; set { _budgetTitle = value; OnPropertyChanged(); } }
+
+        public bool HasBudget => BudgetAmount > 0;
+        public bool NeedsBudget => !HasBudget;
+
         public async Task LoadBudgetAsync()
         {
-            var budget = await _databaseService.GetCurrentBudgetAsync();
+            var list = GroceryList
+                .OrderByDescending(l => l.ListId)
+                .FirstOrDefault();
+            if (list == null) return;
 
-            if (budget == null)
-            {
+            _budgetViewModel.CurrentListId = list.ListId;
+
+            await _budgetViewModel.LoadBudgetAsync();
+            await _budgetViewModel.RefreshBudgetFromDatabase();
+
+            BudgetTitle = _budgetViewModel.BudgetName;
+
+            if (decimal.TryParse(_budgetViewModel.BudgetAmount, out var amt))
+                BudgetAmount = amt;
+            else
                 BudgetAmount = 0;
-                RemainingBudget = 0;
-                BudgetTitle = string.Empty;
-                BudgetSummaryText = "$0.00 spent of $0.00";
-                RemainingBudgetText = "$0.00 Remaining";
-                BudgetProgress = 0;
-                return;
-            }
 
-            BudgetAmount = budget.Amount;
-            BudgetTitle = budget.BudgetName;
+            BudgetSummaryText = _budgetViewModel.BudgetSummaryText;
+            RemainingBudgetText = _budgetViewModel.RemainingBudgetText;
+            BudgetProgress = _budgetViewModel.BudgetProgress;
 
-            decimal spent = budget.Amount - budget.Remaining;
-            decimal remaining = budget.Remaining;
+            OnPropertyChanged(nameof(HasBudget));
+            OnPropertyChanged(nameof(NeedsBudget));
+        }
 
-            BudgetSummaryText = $"${spent:F2} of ${budget.Amount:F2}";
-            RemainingBudgetText = $"Remaining: ${remaining:F2}";
 
-            BudgetProgress = budget.Amount == 0
-                ? 0
-                : (double)(spent / budget.Amount);
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

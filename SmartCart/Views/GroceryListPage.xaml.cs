@@ -7,11 +7,16 @@ namespace SmartCart.Views;
 public partial class GroceryListPage : ContentPage
 {
     private readonly GroceryListViewModel _viewModel;
+    private readonly BudgetViewModel _budgetViewModel;
 
-    public GroceryListPage(GroceryListViewModel viewModel)
+    public GroceryListPage(GroceryListViewModel viewModel, BudgetViewModel budgetViewModel)
     {
         InitializeComponent();
-        BindingContext = _viewModel = viewModel;
+
+        _viewModel = viewModel;
+        _budgetViewModel = budgetViewModel;
+
+        BindingContext = _viewModel;
     }
 
     public string ListId
@@ -21,6 +26,7 @@ public partial class GroceryListPage : ContentPage
             if (int.TryParse(value, out int id))
             {
                 _viewModel.ListId = id;
+                _budgetViewModel.CurrentListId = id;
             }
         }
     }
@@ -29,7 +35,6 @@ public partial class GroceryListPage : ContentPage
     {
         base.OnAppearing();
 
-        // Ensure valid list
         if (_viewModel.ListId == 0)
         {
             var lists = await _viewModel.GetListsAsync();
@@ -39,9 +44,9 @@ public partial class GroceryListPage : ContentPage
         }
 
         await _viewModel.LoadItemsAsync();
+        await _viewModel.LoadBudgetAsync();
     }
 
-    // 🔼 INCREASE
     private async void OnRaiseQuantityNumber(object sender, EventArgs e)
     {
         var item = (sender as Button)?.BindingContext as GroceryItem;
@@ -52,9 +57,9 @@ public partial class GroceryListPage : ContentPage
         await _viewModel.SaveItemAsync(item);
 
         RefreshTotals();
+        await _budgetViewModel.RefreshBudgetFromDatabase();
     }
 
-    // 🔽 DECREASE
     private async void OnLowerQuantityNumber(object sender, EventArgs e)
     {
         var item = (sender as Button)?.BindingContext as GroceryItem;
@@ -64,10 +69,8 @@ public partial class GroceryListPage : ContentPage
 
         if (item.Quantity == 0)
         {
-            await _viewModel.DeleteItemsAsync(item);
-
-            // 🔥 remove from UI instantly
             _viewModel.UserItems.Remove(item);
+            await _viewModel.DeleteItemsAsync(item);
         }
         else
         {
@@ -75,16 +78,15 @@ public partial class GroceryListPage : ContentPage
         }
 
         RefreshTotals();
+        await _budgetViewModel.RefreshBudgetFromDatabase();
     }
 
-    // 🔄 CENTRALIZED TOTAL UPDATE
     private void RefreshTotals()
     {
         _viewModel.UpdateTotals(_viewModel.UserItems.ToList());
         _viewModel.UpdateStoreComparison();
     }
 
-    // ➕ NAVIGATE TO ADD ITEMS
     private async void OnAddItemsClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync($"{nameof(AddItemPage)}?listId={_viewModel.ListId}");
