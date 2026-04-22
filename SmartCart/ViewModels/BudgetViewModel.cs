@@ -171,7 +171,7 @@ namespace SmartCart.ViewModels
 
         private async Task OnSaveBudget()
         {
-            var existing = await _databaseService.GetBudgetByListIdAsync(CurrentListId);
+            var existing = await _databaseService.GetCurrentBudgetAsync();
             if (string.IsNullOrWhiteSpace(BudgetName))
             {
                 await Shell.Current.DisplayAlert("Error", "Budget name is required.", "OK");
@@ -206,10 +206,12 @@ namespace SmartCart.ViewModels
                     Amount = amount,
                     Limit = amount,
                     Remaining = amount,
-                    ListId = CurrentListId
+                    //ListId = CurrentListId
                 };
 
                 await _databaseService.SaveBudgetAsync(budget);
+
+                MessagingCenter.Send(this, "BudgetUpdated");
             }
 
             await LoadBudgetAsync();
@@ -291,8 +293,7 @@ namespace SmartCart.ViewModels
         {
             await LoadPriceDataAsync();
 
-            var budget = await _databaseService.GetBudgetByListIdAsync(CurrentListId);
-
+            var budget = await _databaseService.GetCurrentBudgetAsync();
             if (budget == null)
             {
                 BudgetName = "";

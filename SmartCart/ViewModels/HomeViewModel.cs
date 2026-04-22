@@ -155,27 +155,42 @@ namespace SmartCart.ViewModels
 
         public async Task LoadBudgetAsync()
         {
-            var list = GroceryList
-                .OrderByDescending(l => l.ListId)
-                .FirstOrDefault();
-            if (list == null) return;
+            var budget = await _databaseService.GetCurrentBudgetAsync();
 
-            _budgetViewModel.CurrentListId = list.ListId;
-
-            await _budgetViewModel.LoadBudgetAsync();
-            await _budgetViewModel.RefreshBudgetFromDatabase();
-
-            BudgetTitle = _budgetViewModel.BudgetName;
-
-            if (decimal.TryParse(_budgetViewModel.BudgetAmount, out var amt))
-                BudgetAmount = amt;
-            else
+            if (budget == null)
+            {
                 BudgetAmount = 0;
+                BudgetTitle = "";
+                BudgetSummaryText = "$0.00 spent of $0.00";
+                RemainingBudgetText = "$0.00 Remaining";
+                BudgetProgress = 0;
 
-            BudgetSummaryText = _budgetViewModel.BudgetSummaryText;
-            RemainingBudgetText = _budgetViewModel.RemainingBudgetText;
-            BudgetProgress = _budgetViewModel.BudgetProgress;
+                OnPropertyChanged(nameof(BudgetAmount));
+                OnPropertyChanged(nameof(BudgetSummaryText));
+                OnPropertyChanged(nameof(RemainingBudgetText));
+                OnPropertyChanged(nameof(BudgetProgress));
+                OnPropertyChanged(nameof(HasBudget));
+                OnPropertyChanged(nameof(NeedsBudget));
 
+                return;
+            }
+
+            BudgetTitle = budget.BudgetName;
+            BudgetAmount = budget.Amount;
+
+            decimal spent = budget.Amount - budget.Remaining;
+
+            BudgetSummaryText = $"${spent:F2} of ${budget.Amount:F2}";
+            RemainingBudgetText = $"${budget.Remaining:F2} Remaining";
+
+            BudgetProgress = budget.Amount == 0
+                ? 0
+                : (double)(spent / budget.Amount);
+
+            OnPropertyChanged(nameof(BudgetAmount));
+            OnPropertyChanged(nameof(BudgetSummaryText));
+            OnPropertyChanged(nameof(RemainingBudgetText));
+            OnPropertyChanged(nameof(BudgetProgress));
             OnPropertyChanged(nameof(HasBudget));
             OnPropertyChanged(nameof(NeedsBudget));
         }

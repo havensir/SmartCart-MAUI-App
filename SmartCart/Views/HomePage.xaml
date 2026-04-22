@@ -12,52 +12,70 @@
                 <VerticalStackLayout Padding="5" Spacing="10">
 
                     <!-- HEADER -->
-                    <Grid ColumnDefinitions="*,Auto,Auto"
-              Padding="0,12,0,20">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto"
+      Padding="0,12,0,20">
 
                         <!-- Title -->
                         <Label Grid.Column="0"
-                   Text="{Binding WelcomeText}"
-                   FontSize="30"
-                   FontAttributes="Bold"
-                   TextColor="#1E293B"
-                   VerticalOptions="Center"/>
+           Text="{Binding WelcomeText}"
+           FontSize="30"
+           FontAttributes="Bold"
+           TextColor="#1E293B"
+           VerticalOptions="Center"/>
 
                         <!-- Profile -->
                         <Border Grid.Column="1"
-                    BackgroundColor="White"
-                    Stroke="#DCE3EB"
-                    StrokeShape="RoundRectangle 18"
-                    Padding="12"
-                    Margin="8,0">
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
 
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnProfileTapped"/>
                             </Border.GestureRecognizers>
 
                             <Image Source="profile.png"
-                       HeightRequest="24"
-                       WidthRequest="24"/>
+               HeightRequest="24"
+               WidthRequest="24"/>
                         </Border>
 
                         <!-- Share -->
                         <Border Grid.Column="2"
-                    BackgroundColor="White"
-                    Stroke="#DCE3EB"
-                    StrokeShape="RoundRectangle 18"
-                    Padding="12"
-                    Margin="8,0">
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
 
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnShareTapped"/>
                             </Border.GestureRecognizers>
 
                             <Image Source="share.png"
-                       HeightRequest="24"
-                       WidthRequest="24"/>
+               HeightRequest="24"
+               WidthRequest="24"/>
+                        </Border>
+
+                        <!-- Help -->
+                        <Border Grid.Column="3"
+            BackgroundColor="White"
+            Stroke="#DCE3EB"
+            StrokeShape="RoundRectangle 18"
+            Padding="12"
+            Margin="8,0">
+
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnHelpTapped"/>
+                            </Border.GestureRecognizers>
+
+                            <Image Source="info.png"
+               HeightRequest="24"
+               WidthRequest="24"/>
                         </Border>
 
                     </Grid>
+
 
                     <!-- BUDGET CARD -->
                     <Border BackgroundColor="White"
@@ -94,28 +112,18 @@
                                 </Grid>
 
                                 <Label Text="{Binding BudgetTitle}"
-                           FontSize="22"
+                           FontSize="30"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            TextColor="#111827" />
 
                                 <Label Text="{Binding BudgetAmount, StringFormat='{}{0:C}'}"
-                           FontSize="32"
+                           FontSize="28"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            TextColor="#16A34A" />
 
-                                <Label Text="{Binding BudgetSummaryText}"
-                           FontSize="14"
-                           HorizontalOptions="Center"
-                           TextColor="#6B7280" />
-
-                                <ProgressBar Progress="{Binding BudgetProgress}"
-                                 HeightRequest="10"
-                                 ProgressColor="#16A34A"
-                                 BackgroundColor="#E5E7EB" />
-
-                            </VerticalStackLayout>
+                            </VerticalStackLayout> 
 
                             <!-- NO BUDGET -->
                             <HorizontalStackLayout IsVisible="{Binding NeedsBudget}" Spacing="12">
@@ -230,7 +238,7 @@
                     </Grid>
 
                     <!-- ACTION BUTTON -->
-                    <Button Text="View Grocery Lists"
+                    <Button Text="View Grocery List"
                 HeightRequest="52"
                 FontSize="18"
                 CornerRadius="18"

@@ -24,8 +24,13 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
-        _isLoggedIn = Preferences.Default.Get(LoggedInKey, false);
+
+        MessagingCenter.Subscribe<BudgetViewModel>(this, "BudgetUpdated", async (sender) =>
+        {
+            await _viewModel.LoadBudgetAsync();
+        });
     }
+
 
     protected override async void OnAppearing()
     {
@@ -201,5 +206,27 @@ public partial class HomePage : ContentPage
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(BudgetPage));
+    }
+
+    private async void OnHelpTapped(object sender, EventArgs e)
+    {
+        await DisplayAlert(
+            "Getting Started With SmartCart!",
+            "SmartCart helps you plan smarter grocery trips by comparing store prices and tracking your budget.\n\n" +
+
+            "1. Create an account or log in (optional)\n\n" +
+            "2. Set a budget to plan your shopping\n\n" +
+            "3. Add items to your grocery list\n\n" +
+            "4. See the lowest store pricing automatically\n\n" +
+            "  --> Compare prices across popular grocery stores\n\n" +
+            "  --> Browse store pages directly from the homepage\n\n" +
+
+            "Coming soon:\n" +
+            "• Add custom items\n" +
+            "• Enhanced homepage budget bar\n\n" +
+
+            "Note: Prices are based on recently collected public data and are intended for comparison purposes only. Actual prices may vary by location and/or time.",
+            "Got it!"
+        );
     }
 }

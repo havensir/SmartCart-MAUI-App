@@ -12,6 +12,8 @@ namespace SmartCart
         {
             var builder = MauiApp.CreateBuilder();
 
+            //File.Delete(Path.Combine(FileSystem.AppDataDirectory, "smartcart_v2.db"));
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
