@@ -191,10 +191,16 @@ namespace SmartCart.ViewModels
 
             if (existing != null)
             {
+                var spent = existing.Amount - existing.Remaining;
+                if (spent < 0)
+                {
+                    spent = 0;
+                }
+
                 existing.BudgetName = BudgetName.Trim();
                 existing.Amount = amount;
                 existing.Limit = amount;
-                existing.Remaining = amount;
+                existing.Remaining = Math.Max(0, amount - spent);
 
                 await _databaseService.SaveBudgetAsync(existing);
             }
