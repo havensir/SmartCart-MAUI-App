@@ -1,5 +1,4 @@
 ﻿using SQLite;
-using System;
 
 namespace SmartCart.Models
 {

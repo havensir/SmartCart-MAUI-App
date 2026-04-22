@@ -1,10 +1,4 @@
 using SmartCart.Models;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmartCart.Database
 {
@@ -66,13 +60,6 @@ namespace SmartCart.Database
         {
             return _database.DeleteBudgetAsync(budget);
         }
-
-        public async Task<decimal> GetTotalSpentAsync()
-        {
-            var items = await _database.GetItemsAsync(0);
-            return items.Sum(i => i.Price * i.Quantity);
-        }
-
 
     }
 }

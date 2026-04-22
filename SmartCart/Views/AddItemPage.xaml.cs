@@ -1,46 +1,118 @@
+using Microsoft.Maui.Controls;
+using SmartCart.Models;
+using SmartCart.ViewModels;
+using System;
+
 namespace SmartCart.Views;
 
+[QueryProperty(nameof(ListId), "listId")]
 public partial class AddItemPage : ContentPage
 {
-   
-    public AddItemPage()
-	{
-		InitializeComponent();
-	}
+    private readonly GroceryListViewModel _viewModel;
+    private int _currentListId;
 
-    private async void OnAddItemClicked(object sender, EventArgs e)
+    public AddItemPage(GroceryListViewModel groceryListViewModel)
     {
-        // TODO (Xander - Logic): Validate inputs (no empty name, valid price, no negatives)
+        InitializeComponent();
+        _viewModel = groceryListViewModel;
+        BindingContext = _viewModel;
+    }
 
-        if (string.IsNullOrWhiteSpace(NameEntry.Text) ||
-            string.IsNullOrWhiteSpace(DescriptionEntry.Text))
+    public string ListId
+    {
+        set
         {
-            await DisplayAlert("Error", "Please enter item name and price.", "Okay");
+            if (int.TryParse(value, out int id) && id > 0)
+            {
+                _currentListId = id;
+                _viewModel.ListId = id;
+
+                System.Diagnostics.Debug.WriteLine($"?? AddItemPage received ListId: {id}");
+            }
+        }
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        await _viewModel.LoadPriceDataAsync();
+
+        if (_currentListId == 0)
+        {
+            var lists = await _viewModel.GetListsAsync();
+
+            if (lists.Any())
+            {
+                _currentListId = lists.First().ListId;
+                _viewModel.ListId = _currentListId;
+            }
+        }
+
+        _viewModel.LoadDefaultItems();
+        _viewModel.SelectedDepartment = "All";
+        _viewModel.FilterItems();
+    }
+
+    // SEARCH
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        string searchText = e.NewTextValue?.Trim().ToLower();
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            _viewModel.FilterItems();
             return;
         }
 
-        // TODO (Christopher - Backend): Save new item to SQLite database
+        var filtered = _viewModel.Items
+            .Where(x => x.Name.ToLower().Contains(searchText))
+            .ToList();
 
-        // TODO (Xander - Logic): Create GroceryItem object and apply default quantity
+        _viewModel.Items.Clear();
 
-        // TODO (Isabella - Integration): Pass new item back to GroceryListViewModel
-        // TODO (Isabella - Navigation): Navigate back to GroceryListPage after adding item
+        foreach (var item in filtered)
+            _viewModel.Items.Add(item);
     }
-    private async void OnCartTapped(object sender, EventArgs e)
+
+    // FILTER
+    private void OnDepartmentSelected(object sender, SelectionChangedEventArgs e)
     {
+        if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
+            return;
 
+        var selected = e.CurrentSelection[0] as string;
+
+        if (string.IsNullOrEmpty(selected))
+            return;
+
+        _viewModel.SelectedDepartment = selected;
+        ((CollectionView)sender).SelectedItem = null;
     }
 
-    private async void OnDeleteItemClicked(object sender, EventArgs e)
-	{
-		// TODO (Melissa - UI/UX): Add confirmation alert before deleting item
-		bool confirm = await DisplayAlert(
-			"Delete Item",
-			"Are you sure you want to delete this item?",
-			"Yes",
-			"No");
-		if (!confirm)
-			return;
+    // ADD ITEM
+    private async void OnQuickAddItem(object sender, EventArgs e)
+    {
+        var item = (sender as Button)?.BindingContext as GroceryItem;
+        if (item == null) return;
 
+        var newItem = new GroceryItem
+        {
+            Name = item.Name,
+            Category = item.Category,
+            Quantity = 1,
+            ListId = _currentListId
+        };
+
+        await _viewModel.AddItemsAsync(newItem);
+        await _viewModel.LoadItemsAsync();
+
+        await Shell.Current.GoToAsync("..");
+    }
+
+    // CART TAPPED
+    private void OnCartTapped(object sender, EventArgs e)
+    {
+        // TODO: Add your logic here for when the cart image is tapped
     }
 }

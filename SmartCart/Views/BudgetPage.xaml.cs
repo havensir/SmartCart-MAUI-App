@@ -3,23 +3,38 @@ using SmartCart.ViewModels;
 
 namespace SmartCart.Views;
 
+[QueryProperty(nameof(ListId), "listId")]
 public partial class BudgetPage : ContentPage
 {
+    private readonly BudgetViewModel _viewModel;
+    private int _listId;
+
     public BudgetPage(BudgetViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = viewModel;
+        BindingContext = _viewModel = viewModel;
     }
 
-    // TODO (Isabella - Integration): Set BindingContext to BudgetViewModel
-    // TODO (Melissa - UI/UX): Improve layout and readability
+    public string ListId
+    {
+        set
+        {
+            if (int.TryParse(value, out int id))
+            {
+                _listId = id;
+                _viewModel.CurrentListId = id;
+            }
+        }
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        if (BindingContext is BudgetViewModel vm)
-        {
-            await vm.LoadBudgetAsync();
-        }
+        if (_viewModel.CurrentListId == 0)
+            _viewModel.CurrentListId = _listId;
+
+        await _viewModel.LoadBudgetAsync();
+        await _viewModel.RefreshBudgetFromDatabase();
     }
 }

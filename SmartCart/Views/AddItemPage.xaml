@@ -2,38 +2,69 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.AddItemPage"
-             Title="AddItemPage">
+             Title="Add Items"
+             BackgroundColor="#F7F9FC">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,Auto,*"
+          RowSpacing="18">
 
-            
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Text="Add Grocery Item"
-                       Style="{StaticResource PageTitle}"/>
+        <!-- HEADER -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="Add Items"
+                   Style="{StaticResource PageTitle}"/>
 
-                <Image Grid.Column="1"
-                       Source="cart.png"
-                       WidthRequest="26"
-                       HeightRequest="26">
-                
-                    
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCartTapped"/>
-                    </Image.GestureRecognizers>
-                </Image>
+            <Label Text="Browse and add items to your list"
+                   FontSize="14"
+                   FontAttributes="Italic"
+                   TextColor="#777"/>
+        </VerticalStackLayout>
+
+        <!-- SEARCH -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Padding="14">
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+
+                <Image Source="search.png"
+                       HeightRequest="20"
+                       Opacity="0.6"/>
+
+                <Entry Grid.Column="1"
+                       Placeholder="Search groceries..."
+                       BackgroundColor="Transparent"
+                       TextChanged="OnSearchTextChanged"/>
             </Grid>
-            
-            <Entry x:Name="NameEntry"
-                   Placeholder="Item Name"/>
-            
-            <Entry x:Name="DescriptionEntry"
-                   Placeholder="Description"/>
+        </Border>
 
-            <Entry x:Name="PriceEntry"
-                   Placeholder="Price"
-                   Keyboard="Numeric"/>
+        <!-- DEPARTMENTS -->
+        <VerticalStackLayout Grid.Row="2" Spacing="8">
 
+            <Label Text="Shop by Department"
+                   FontSize="18"
+                   FontAttributes="Bold"/>
+
+            <CollectionView ItemsSource="{Binding Departments}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnDepartmentSelected"
+                            HeightRequest="125">
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="3"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="6"
+                               Margin="5"
+                               CornerRadius="16"
+                               HasShadow="False"
+                               BackgroundColor="White"
+                               BorderColor="{StaticResource PrimaryColor}">
+
+                            <VerticalStackLayout Spacing="2"
+                                                 HorizontalOptions="Center">
             <Picker x:Name="CategoryPicker"
                     Title="Category">
                 <Picker.Items>
@@ -42,18 +73,85 @@
                     <x:String>Bakery</x:String>
                     <x:String>Meat</x:String>
                     <x:String>Frozen</x:String>
+                    <x:String>Pantry</x:String>
+                    <x:String>Beverages</x:String>
                 </Picker.Items>
             </Picker>
 
-            <Button Text="+ Add Item To Cart"
-                    Style="{StaticResource PrimaryButton}"
-                    Clicked="OnAddItemClicked"/>
+                                <Label Text="🛒"
+                                       FontSize="16"/>
 
-            <Button Text="X Delete Item From Cart"
-                    BackgroundColor="{StaticResource DangerColor}"
-                    TextColor="#FEFEFA"
-                    Clicked="OnDeleteItemClicked"/>
+                                <Label Text="{Binding}"
+                                       FontAttributes="Bold"
+                                       FontSize="12"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
 
+            </CollectionView>
         </VerticalStackLayout>
-    </ScrollView>
+
+        <!-- ITEMS + TOTAL -->
+        <Grid Grid.Row="3"
+              RowDefinitions="Auto,*"
+              RowSpacing="10">
+
+           
+            <!-- TOTAL -->
+            <!-- <Border Style="{StaticResource CardStyle}"
+                    Padding="14"
+                    BackgroundColor="{StaticResource PrimaryColor}">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <Label Text="Running Total"
+                           TextColor="White"
+                           FontAttributes="Bold"/>
+
+                    <Label Grid.Column="1"
+                           Text="{Binding Total, StringFormat='{}{0:C}'}"
+                           TextColor="White"
+                           FontAttributes="Bold"/>
+                </Grid>
+            </Border> -->
+
+            <!-- ITEMS -->
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding Items}"
+                            SelectionMode="None">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}"
+                                Padding="16"
+                                Margin="0,0,0,12">
+
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto">
+
+                                <!-- NAME -->
+                                <Label Text="{Binding Name}"
+                                       FontAttributes="Bold"
+                                       FontSize="17"/>
+
+                                <!-- ADD BUTTON -->
+                                <Button Grid.Column="1"
+                                        Text="+"
+                                        WidthRequest="38"
+                                        HeightRequest="38"
+                                        CornerRadius="19"
+                                        BackgroundColor="{StaticResource PrimaryColor}"
+                                        TextColor="White"
+                                        Clicked="OnQuickAddItem"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </Grid>
+
+    </Grid>
 </ContentPage>

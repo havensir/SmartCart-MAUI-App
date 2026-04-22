@@ -1,12 +1,16 @@
-using Microsoft.Maui.Controls;
 using SmartCart.ViewModels;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
 
 namespace SmartCart.Views;
 
 public partial class HomePage : ContentPage
 {
     private readonly HomeViewModel _viewModel;
+
+    private bool _isLoggedIn;
+
+    private const string UsernameKey = "smartcart_username";
+    private const string PasswordKey = "smartcart_password";
+    private const string LoggedInKey = "smartcart_loggedin";
 
     private readonly Dictionary<string, string> storeUrls = new()
     {
@@ -20,6 +24,7 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
+        _isLoggedIn = Preferences.Default.Get(LoggedInKey, false);
     }
 
     protected override async void OnAppearing()
@@ -28,10 +33,17 @@ public partial class HomePage : ContentPage
 
         await _viewModel.LoadListsAsync();
 
-        int currentListId = _viewModel.GroceryList.FirstOrDefault()?.ListId ?? 0;
-        await _viewModel.LoadBudgetAsync(currentListId);
-    }
+        var list = _viewModel.GroceryList
+            .OrderByDescending(l => l.ListId)
+            .FirstOrDefault();
 
+        if (list != null)
+        {
+        }
+    }
+   
+
+    // STORE TAP
     private async void OnStoreTapped(object sender, TappedEventArgs e)
     {
         string store = e.Parameter?.ToString();
@@ -49,10 +61,9 @@ public partial class HomePage : ContentPage
                 $"Go to {store} website?",
                 "Yes",
                 "No");
+
             if (confirm)
-            {
                 await Launcher.OpenAsync(url);
-            }
         }
         else
         {
@@ -60,20 +71,125 @@ public partial class HomePage : ContentPage
         }
     }
 
-    private async void OnSignInTapped(object sender, EventArgs e)
+
+    // PROFILE
+    private async void OnProfileTapped(object sender, EventArgs e)
     {
-        bool isLoggedIn = false;
-        if (!isLoggedIn)
-        {
-            // Pass the required HomeViewModel instance to the HomePage constructor
-            await Navigation.PushAsync(new HomePage(_viewModel));
-        }
+        if (_isLoggedIn)
+            await ShowLoggedInMenu();
         else
+            await ShowLoggedOutMenu();
+    }
+
+    private async Task ShowLoggedOutMenu()
+    {
+        string action = await DisplayActionSheet(
+            "Account",
+            "Cancel",
+            null,
+            "Log In",
+            "Create Account");
+
+        if (action == "Log In")
+            await PromptLogin();
+        else if (action == "Create Account")
+            await PromptCreateAccount();
+    }
+
+    private async Task ShowLoggedInMenu()
+    {
+        string action = await DisplayActionSheet(
+            "Account Settings",
+            "Cancel",
+            null,
+            "Change Username",
+            "Change Password",
+            "Log Out");
+
+        switch (action)
         {
-            await DisplayAlert("Welcome", "You are signed in now", "OK");
+            case "Change Username":
+                await ChangeUsername();
+                break;
+
+            case "Change Password":
+                await ChangePassword();
+                break;
+
+            case "Log Out":
+                await LogOut();
+                break;
         }
     }
 
+    private async Task PromptCreateAccount()
+    {
+        string username = await DisplayPromptAsync("Create Account", "Enter a username:");
+        if (string.IsNullOrWhiteSpace(username)) return;
+
+        string password = await DisplayPromptAsync("Create Account", "Enter a password:");
+        if (string.IsNullOrWhiteSpace(password)) return;
+
+        Preferences.Default.Set(UsernameKey, username);
+        Preferences.Default.Set(PasswordKey, password);
+
+        await DisplayAlert("Account Created", "Your account has been created successfully.", "OK");
+    }
+
+    private async Task PromptLogin()
+    {
+        string username = await DisplayPromptAsync("Log In", "Username:");
+        if (string.IsNullOrWhiteSpace(username)) return;
+
+        string password = await DisplayPromptAsync("Log In", "Password:");
+        if (string.IsNullOrWhiteSpace(password)) return;
+
+        string savedUser = Preferences.Default.Get(UsernameKey, "");
+        string savedPass = Preferences.Default.Get(PasswordKey, "");
+
+        if (username == savedUser && password == savedPass)
+        {
+            _isLoggedIn = true;
+            Preferences.Default.Set(LoggedInKey, true);
+
+            await DisplayAlert("Welcome", $"Logged in as {username}", "OK");
+        }
+        else
+        {
+            await DisplayAlert("Login Failed", "Invalid username or password.", "OK");
+        }
+    }
+
+    private async Task ChangeUsername()
+    {
+        string newUser = await DisplayPromptAsync("Change Username", "Enter new username:");
+        if (string.IsNullOrWhiteSpace(newUser)) return;
+
+        Preferences.Default.Set(UsernameKey, newUser);
+
+        await DisplayAlert("Updated", "Username changed successfully.", "OK");
+    }
+
+    private async Task ChangePassword()
+    {
+        string newPass = await DisplayPromptAsync("Change Password", "Enter new password:");
+        if (string.IsNullOrWhiteSpace(newPass)) return;
+
+        Preferences.Default.Set(PasswordKey, newPass);
+
+        await DisplayAlert("Updated", "Password changed successfully.", "OK");
+    }
+
+    private async Task LogOut()
+    {
+        _isLoggedIn = false;
+        Preferences.Default.Set(LoggedInKey, false);
+
+        await DisplayAlert("Logged Out", "You have been signed out.", "OK");
+    }
+
+
+    // SHARE
     private async void OnShareTapped(object sender, EventArgs e)
     {
         await Share.Default.RequestAsync(new ShareTextRequest
@@ -84,10 +200,39 @@ public partial class HomePage : ContentPage
         });
     }
 
-    private async void OnCartTapped(object sender, EventArgs e)
+
+    // NAVIGATION
+    //private async void OnViewGroceryListsClicked(object sender, EventArgs e)
+    //{
+    //    var selectedList = _viewModel.GroceryList.FirstOrDefault();
+
+    //    if (selectedList == null)
+    //    {
+    //        await DisplayAlert("No List", "No grocery list found. Please create one first.", "OK");
+    //        return;
+    //    }
+
+    //    await Shell.Current.GoToAsync($"{nameof(GroceryListPage)}?listId={selectedList.ListId}");
+    //}
+
+    private async void OnViewGroceryListsClicked(object sender, EventArgs e)
     {
-        // TODO: Implement cart tapped logic here
+        await Shell.Current.GoToAsync(nameof(GroceryListPage));
     }
+
+    //private async void OnCreateBudgetClicked(object sender, EventArgs e)
+    //{
+    //    var selectedList = _viewModel.GroceryList.FirstOrDefault();
+
+    //    if (selectedList == null)
+    //    {
+    //        await DisplayAlert("Error", "You need a grocery list before creating a budget.", "OK");
+    //        return;
+    //    }
+
+    //    await Shell.Current.GoToAsync($"{nameof(BudgetPage)}?listId={selectedList.ListId}");
+    //}
+
     private async void OnCreateBudgetClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(BudgetPage));
