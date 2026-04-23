@@ -1,12 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SQLite;
 
 namespace SmartCart.Models
 {
-    internal class Budget
+    public class Budget
     {
+        // backend-christopher
+        [PrimaryKey, AutoIncrement]
+        public int BudgetId { get; set; }
+
+        [NotNull]
+        public string BudgetName { get; set; }
+        public int ListId { get; set; }
+
+        // Use decimal for currency values
+        public decimal Amount { get; set; }
+
+        public decimal Limit { get; set; }
+
+        public decimal Remaining { get; set; }
+
+        [Ignore]
+        public bool IsOverBudget { get; set; }
+
+        [Ignore]
+        public bool IsNearBudget { get; set; }
     }
 }

@@ -1,12 +1,191 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartCart.Views.GroceryListPage"
-             Title="GroceryListPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:Name="ThisPage"
+             Title="Your List"
+             BackgroundColor="#F7F9FC">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- BUDGET SECTION -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Budget Remaining"
+           Style="{StaticResource PageTitle}"/>
+            </VerticalStackLayout>
+
+            <Border BackgroundColor="White"
+        Stroke="#DCE3EB"
+        StrokeShape="RoundRectangle 22"
+        Padding="22">
+
+                <Border.BindingContext>
+                    <Binding Path="BindingContext"
+                 Source="{x:Reference ThisPage}" />
+                </Border.BindingContext>
+
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- EMPTY STATE -->
+                    <Label Text="No budget set yet"
+               FontAttributes="Italic"
+               TextColor="#999"
+               HorizontalOptions="Center"
+               IsVisible="{Binding NoBudget}"/>
+
+                    <!-- ACTUAL BUDGET DATA -->
+                    <Label Text="{Binding BudgetName}"
+               FontSize="18"
+               FontAttributes="Bold"
+               IsVisible="{Binding HasBudget}" />
+
+                    <Label Text="{Binding BudgetSummaryText}"
+               FontAttributes="Bold"
+               IsVisible="{Binding HasBudget}" />
+
+                    <ProgressBar Progress="{Binding BudgetProgress}"
+                     HeightRequest="8"
+                     IsVisible="{Binding HasBudget}" />
+
+                    <Label Text="{Binding RemainingBudgetText}"
+               TextColor="{Binding ProgressBarColor}"
+               FontAttributes="Bold"
+               HorizontalOptions="End"
+               IsVisible="{Binding HasBudget}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- HEADER -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Your Grocery List"
+                       Style="{StaticResource PageTitle}"/>
+
+                <Label Text="Review your selected items and compare totals across stores"
+                       FontSize="14"
+                       FontAttributes="Italic"
+                       TextColor="#777"/>
+            </VerticalStackLayout>
+
+            <!-- ADD ITEMS BUTTON -->
+            <Button Text="Add Items"
+                    Clicked="OnAddItemsClicked"
+                    Style="{StaticResource PrimaryButton}" />
+
+            <!-- TOTAL -->
+            <Border Style="{StaticResource CardStyle}"
+                    Padding="16"
+                    BackgroundColor="{StaticResource PrimaryColor}">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Lowest Running Total"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           FontSize="16"/>
+
+                    <Label Grid.Column="1"
+                           Text="{Binding Total, StringFormat='{}{0:C}'}"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           FontSize="18"/>
+                </Grid>
+            </Border>
+
+            <!-- STORE COMPARISON -->
+            <Border Style="{StaticResource CardStyle}"
+                    Padding="16">
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label Text="Store Comparison"
+                           FontAttributes="Bold"
+                           FontSize="18"/>
+
+                    <Grid ColumnDefinitions="*,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowSpacing="6">
+
+                        <Label Text="Walmart"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding WalmartTotal, StringFormat='{}{0:C}'}"/>
+
+                        <Label Grid.Row="1" Text="Kroger"/>
+                        <Label Grid.Row="1" Grid.Column="1"
+                               Text="{Binding KrogerTotal, StringFormat='{}{0:C}'}"/>
+
+                        <Label Grid.Row="2" Text="Target"/>
+                        <Label Grid.Row="2" Grid.Column="1"
+                               Text="{Binding TargetTotal, StringFormat='{}{0:C}'}"/>
+
+                        <Label Grid.Row="3" Text="Aldi"/>
+                        <Label Grid.Row="3" Grid.Column="1"
+                               Text="{Binding AldiTotal, StringFormat='{}{0:C}'}"/>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ITEMS -->
+            <CollectionView ItemsSource="{Binding UserItems}"
+                            SelectionMode="None">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}"
+                                Padding="16"
+                                Margin="0,8,0,4">
+
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto"
+                                  RowSpacing="4">
+
+                                <Label Text="{Binding Name}"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       Margin="10,0,10,10"
+                                       FontSize="14"/>
+
+                                <!-- QUANTITY -->
+                                <HorizontalStackLayout Grid.Column="1"
+                                                       Grid.RowSpan="2"
+                                                       Spacing="6"
+                                                       VerticalOptions="Center">
+
+                                    <Button Text="-"
+                                            WidthRequest="35"
+                                            HeightRequest="35"
+                                            CornerRadius="16"
+                                            FontSize="25"
+                                            Padding="0,0,0,0"
+                                            TextColor="Black"
+                                            BackgroundColor="#E5E5E5"
+                                            Clicked="OnLowerQuantityNumber"/>
+
+                                    <Label Text="{Binding Quantity}"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           WidthRequest="25"
+                                           FontAttributes="Bold"/>
+
+                                    <Button Text="+"
+                                            WidthRequest="35"
+                                            HeightRequest="35"
+                                            CornerRadius="16"
+                                            FontSize="16"
+                                            Padding="0,0,0,0"
+                                            TextColor="Black"
+                                            BackgroundColor="#E5E5E5"
+                                            Clicked="OnRaiseQuantityNumber"/>
+                                </HorizontalStackLayout>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
 </ContentPage>
